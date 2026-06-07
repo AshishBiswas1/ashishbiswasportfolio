@@ -36,6 +36,13 @@ html {
  scroll-behavior: smooth;
  /* Prevents text from resizing automatically when rotating mobile devices */
  -webkit-text-size-adjust: 100%;
+ /* Keeps scrolling active while hiding the browser scrollbar */
+ scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+ display: none;
 }
 
 body {
@@ -56,6 +63,8 @@ body {
  /* Strictly prevents horizontal scrolling/wobble on mobile */
  overflow-x: hidden;
  width: 100%;
+ -ms-overflow-style: none;
+ scrollbar-width: none;
 }
 
 /* =========================================

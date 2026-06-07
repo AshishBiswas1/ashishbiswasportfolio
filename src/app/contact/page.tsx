@@ -1,50 +1,92 @@
+const contactCards = [
+ { label: "Opportunities", value: "Open to internships and project work" },
+ { label: "Response", value: "Best for concise project or role details" },
+ { label: "Location", value: "India, available for remote collaboration" },
+];
+
 export default function ContactPage() {
  return (
-  <div className="max-w-2xl mx-auto space-y-8">
-   <h1 className="text-4xl font-bold text-gray-900">Get in Touch</h1>
-   <p className="text-gray-600">
-    [ Placeholder text inviting the visitor to reach out for opportunities or
-    networking. ]
-   </p>
+  <main className="min-h-screen bg-[#050505] px-6 pb-24 pt-32 text-white sm:px-8 lg:px-10">
+   <section className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+    <div>
+     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/40">
+      Contact
+     </p>
+     <h1 className="mt-5 text-5xl font-black uppercase tracking-tight md:text-7xl">
+      Let&apos;s build something useful.
+     </h1>
+     <p className="mt-7 text-lg leading-8 text-white/62">
+      Share the role, collaboration idea, or project context. The form is ready
+      for frontend capture and can be wired to an API or email service when the
+      backend contact flow is added.
+     </p>
 
-   <form className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-    <div>
-     <label className="block text-sm font-medium text-gray-700 mb-2">
-      Name
-     </label>
-     <input
-      type="text"
-      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-      placeholder="Your Name"
-     />
+     <div className="mt-10 grid gap-4">
+      {contactCards.map((card) => (
+       <div key={card.label} className="border border-white/10 p-5">
+        <p className="text-xs uppercase tracking-[0.2em] text-white/35">
+         {card.label}
+        </p>
+        <p className="mt-2 text-sm text-white/70">{card.value}</p>
+       </div>
+      ))}
+     </div>
     </div>
-    <div>
-     <label className="block text-sm font-medium text-gray-700 mb-2">
-      Email
+
+    <form className="border border-white/10 bg-white/[0.04] p-6 shadow-2xl shadow-black/30 md:p-8">
+     <div className="grid gap-5 sm:grid-cols-2">
+      <label className="block">
+       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        Name
+       </span>
+       <input
+        type="text"
+        className="mt-3 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-white/40"
+        placeholder="Your name"
+       />
+      </label>
+      <label className="block">
+       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        Email
+       </span>
+       <input
+        type="email"
+        className="mt-3 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-white/40"
+        placeholder="you@example.com"
+       />
+      </label>
+     </div>
+
+     <label className="mt-5 block">
+      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+       Subject
+      </span>
+      <input
+       type="text"
+       className="mt-3 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-white/40"
+       placeholder="Internship, project, collaboration"
+      />
      </label>
-     <input
-      type="email"
-      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-      placeholder="your@email.com"
-     />
-    </div>
-    <div>
-     <label className="block text-sm font-medium text-gray-700 mb-2">
-      Message
+
+     <label className="mt-5 block">
+      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+       Message
+      </span>
+      <textarea
+       rows={7}
+       className="mt-3 w-full resize-none border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-white/40"
+       placeholder="Tell me what you are building or hiring for."
+      />
      </label>
-     <textarea
-      rows={4}
-      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-      placeholder="How can I help you?"
-     ></textarea>
-    </div>
-    <button
-     type="button"
-     className="w-full bg-blue-600 text-white font-medium py-3 rounded-md hover:bg-blue-700 transition-colors"
-    >
-     Send Message
-    </button>
-   </form>
-  </div>
+
+     <button
+      type="button"
+      className="mt-6 w-full border border-white bg-white px-5 py-4 text-sm font-bold uppercase tracking-[0.18em] text-black transition hover:bg-transparent hover:text-white"
+     >
+      Send Message
+     </button>
+    </form>
+   </section>
+  </main>
  );
 }

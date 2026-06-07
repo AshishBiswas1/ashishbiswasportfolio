@@ -1,5 +1,7 @@
 import "./globals.css";
 import { ScrollProvider } from "@/context/ScrollContext";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
  children,
@@ -9,7 +11,11 @@ export default function RootLayout({
  return (
   <html lang="en">
    <body>
-    <ScrollProvider>{children}</ScrollProvider>
+    <ScrollProvider>
+     <Navbar />
+     {children}
+     <Footer />
+    </ScrollProvider>
    </body>
   </html>
  );
