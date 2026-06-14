@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { MotionValue } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
@@ -17,7 +17,24 @@ import ObjectiveSection from "@/components/ObjectiveSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import SkillsSection from "@/components/SkillsSection";
 import { useScrollState } from "@/context/ScrollContext";
-import type { Project } from "@/components/ProjectsSection";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
+
+// Suppress THREE.Clock deprecation warning from three.js library
+// This is an internal deprecation in the three.js library and doesn't affect functionality
+if (typeof window !== "undefined") {
+ const originalWarn = console.warn;
+ console.warn = function (...args: any[]) {
+  const message = args.join(" ");
+  if (
+   message.includes("THREE.Clock") ||
+   message.includes("THREE.Timer") ||
+   message.includes("This module has been deprecated")
+  ) {
+   return;
+  }
+  originalWarn.apply(console, args);
+ };
+}
 
 function FloatingGem() {
  return (
@@ -75,14 +92,16 @@ function useSectionMotion(
 
 export default function HomePage() {
  const containerRef = useRef(null);
- const [projects, setProjects] = useState<Project[]>([]);
-
  const { scrollYProgress } = useScroll({
   target: containerRef,
   offset: ["start start", "end end"],
  });
 
- const { setActiveSection } = useScrollState();
+ // Use context to get state and data
+ const { setActiveSection, projects } = useScrollState();
+
+ // Load data from backend on mount
+ usePortfolioData();
 
  const heroMotion = useSectionMotion(
   scrollYProgress,
@@ -125,32 +144,6 @@ export default function HomePage() {
    else setActiveSection("skills");
   });
  }, [scrollYProgress, setActiveSection]);
-
- useEffect(() => {
-  const fetchProjects = async () => {
-   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-   if (!apiBaseUrl) return;
-
-   try {
-    const res = await fetch(
-     `${apiBaseUrl.replace(/\/$/, "")}/api/v1/projects?featured=true`,
-    );
-    const contentType = res.headers.get("content-type");
-
-    if (!res.ok || !contentType?.includes("application/json")) return;
-
-    const data = await res.json();
-    if (data.status === "success") {
-     setProjects(data.data.projects.slice(0, 3));
-    }
-   } catch (error) {
-    console.warn("CMS projects are unavailable right now.", error);
-   }
-  };
-
-  fetchProjects();
- }, []);
 
  return (
   <div

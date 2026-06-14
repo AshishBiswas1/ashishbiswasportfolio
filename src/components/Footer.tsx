@@ -52,15 +52,15 @@ function FooterColumn({
 }) {
  return (
   <div>
-   <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+   <h3 className="mb-3 sm:mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
     {title}
    </h3>
-   <nav className="space-y-3" aria-label={`${title} footer links`}>
+   <nav className="space-y-2 sm:space-y-3" aria-label={`${title} footer links`}>
     {links.map((link) => (
      <Link
       key={link.href}
       href={link.href}
-      className="block text-sm text-white/65 transition duration-300 hover:text-white"
+      className="block text-xs sm:text-sm text-white/65 transition duration-300 hover:text-white"
      >
       {link.label}
      </Link>
@@ -80,31 +80,31 @@ export default function Footer() {
 
  return (
   <footer className="relative z-40 border-t border-white/10 bg-[#050505] text-white">
-   <div className="mx-auto max-w-[1500px] px-6 py-16 sm:px-8 lg:px-10">
-    <div className="grid gap-12 lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.9fr]">
-     <div className="max-w-xl">
+   <div className="mx-auto max-w-375 px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16">
+    <div className="grid gap-6 sm:gap-8 md:gap-12 grid-cols-2 sm:grid-cols-2 md:grid-cols-[1.4fr_0.7fr_0.7fr_0.9fr] lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.9fr]">
+     <div className="col-span-2 sm:col-span-2 md:col-span-1">
       <Link
        href="/"
-       className="text-2xl font-black uppercase tracking-[0.18em] text-white"
+       className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-[0.18em] text-white"
       >
        Ashish Biswas
       </Link>
-      <p className="mt-5 text-base leading-7 text-white/58">
+      <p className="mt-3 sm:mt-4 md:mt-5 text-xs sm:text-sm md:text-base leading-6 md:leading-7 text-white/58">
        Full-stack developer focused on clean interfaces, reliable systems, and
        thoughtful web experiences across the MERN stack and Next.js.
       </p>
-      <div className="mt-8 flex items-center gap-3">
+      <div className="mt-4 sm:mt-6 md:mt-8 flex items-center gap-2 sm:gap-3">
        <button
         type="button"
         aria-label="GitHub profile link coming soon"
-        className="grid h-11 w-11 place-items-center rounded-full border border-white/15 text-white/70 transition duration-300 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        className="grid h-9 sm:h-10 md:h-11 w-9 sm:w-10 md:w-11 place-items-center rounded-full border border-white/15 text-white/70 transition duration-300 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
        >
         <GitHubIcon />
        </button>
        <button
         type="button"
         aria-label="LinkedIn profile link coming soon"
-        className="grid h-11 w-11 place-items-center rounded-full border border-white/15 text-white/70 transition duration-300 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        className="grid h-9 sm:h-10 md:h-11 w-9 sm:w-10 md:w-11 place-items-center rounded-full border border-white/15 text-white/70 transition duration-300 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
        >
         <LinkedInIcon />
        </button>
@@ -114,11 +114,11 @@ export default function Footer() {
      <FooterColumn title="Explore" links={exploreLinks} />
      <FooterColumn title="Profile" links={profileLinks} />
 
-     <div>
-      <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+     <div className="col-span-2 sm:col-span-1 md:col-span-1">
+      <h3 className="mb-3 sm:mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
        Focus
       </h3>
-      <div className="space-y-3 text-sm text-white/65">
+      <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-white/65">
        <p>Next.js interfaces</p>
        <p>MERN applications</p>
        <p>Animated portfolio systems</p>
@@ -127,9 +127,11 @@ export default function Footer() {
      </div>
     </div>
 
-    <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-8 sm:mt-10 md:mt-14 flex flex-col gap-2 sm:gap-3 border-t border-white/10 pt-4 sm:pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
      <p>&copy; {year} Ashish Biswas. All rights reserved.</p>
-     <p>Built with Next.js, React, Tailwind CSS, and a little motion.</p>
+     <p className="hidden sm:block">
+      Built with Next.js, React, Tailwind CSS, and a little motion.
+     </p>
     </div>
    </div>
   </footer>

@@ -38,6 +38,14 @@ html {
  -webkit-text-size-adjust: 100%;
  /* Keeps scrolling active while hiding the browser scrollbar */
  scrollbar-width: none;
+ /* Set proper font-size for rem calculations */
+ font-size: 16px;
+}
+
+@media (max-width: 480px) {
+ html {
+  font-size: 14px;
+ }
 }
 
 html::-webkit-scrollbar,
@@ -49,6 +57,8 @@ body {
  background: var(--background);
  color: var(--foreground);
  font-family: var(--font-sans);
+ margin: 0;
+ padding: 0;
 
  /* Crisp font rendering on Retina and high-DPI mobile screens */
  -webkit-font-smoothing: antialiased;
@@ -62,7 +72,8 @@ body {
 
  /* Strictly prevents horizontal scrolling/wobble on mobile */
  overflow-x: hidden;
- width: 100%;
+ width: 100vw;
+ max-width: 100%;
  -ms-overflow-style: none;
  scrollbar-width: none;
 }
