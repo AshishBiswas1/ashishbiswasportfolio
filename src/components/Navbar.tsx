@@ -62,11 +62,11 @@ function LinkedInIcon() {
 
 export default function Navbar() {
  const pathname = usePathname();
- const { resume } = useScrollState();
+ const { user } = useScrollState();
  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
- const githubUrl = resume?.githubLink || "#";
- const linkedinUrl = resume?.linkedinLink || "#";
+ const githubUrl = user?.githubLink || "#";
+ const linkedinUrl = user?.linkedinLink || "#";
 
  useEffect(() => {
   if (pathname !== "/") return;

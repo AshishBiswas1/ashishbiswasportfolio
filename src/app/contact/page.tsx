@@ -1,13 +1,13 @@
+"use client";
+
+import { useState } from "react";
+import { submitContact } from "@/services/api";
+
 const contactCards = [
  { label: "Opportunities", value: "Open to internships and project work" },
  { label: "Response", value: "Best for concise project or role details" },
  { label: "Location", value: "India, available for remote collaboration" },
 ];
-
-("use client");
-
-import { useState } from "react";
-import { submitContact } from "@/services/api";
 
 export default function ContactPage() {
  const [formData, setFormData] = useState({
@@ -82,7 +82,7 @@ export default function ContactPage() {
 
     <form
      onSubmit={handleSubmit}
-     className="border border-white/10 bg-white/4 p-4 md:p-6 lg:p-8 shadow-2xl shadow-black/30"
+      className="border border-white/10 bg-white/[0.04] p-4 md:p-6 lg:p-8 shadow-2xl shadow-black/30"
     >
      <div className="grid gap-3 md:gap-5 sm:grid-cols-2">
       <label className="block">

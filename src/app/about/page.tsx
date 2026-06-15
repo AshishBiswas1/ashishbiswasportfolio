@@ -1,11 +1,27 @@
-const highlights = [
- "MERN stack development",
- "Next.js interfaces",
- "AI-aware product thinking",
- "Clean API integration",
-];
+"use client";
+
+import { useMemo } from "react";
+import { useScrollState } from "@/context/ScrollContext";
 
 export default function AboutPage() {
+ const { user, objective, skills, qualifications } = useScrollState();
+
+ const highlights = useMemo(() => {
+  const fromSkills = (skills ?? [])
+   .slice(0, 4)
+   .map((s) => s.category || s.name);
+
+  // Fallback to objective-derived highlights if skills not loaded
+  if (fromSkills.length >= 2) return fromSkills;
+
+  return [
+   objective?.headline?.split(" ").slice(0, 3).join(" ") ?? "Full-stack",
+   user?.designation?.[0] ?? "MERN",
+   qualifications?.[0]?.degree ?? "Computer Science",
+   "API integration",
+  ];
+ }, [skills, objective, user, qualifications]);
+
  return (
   <main className="min-h-screen bg-[#050505] px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-white lg:px-10">
    <section className="mx-auto max-w-6xl">
@@ -15,14 +31,14 @@ export default function AboutPage() {
        About
       </p>
       <h1 className="mt-3 md:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
-       Building thoughtful digital systems.
+       {user?.name
+        ? `${user.name.split(" ")[0]}’s Engineering`
+        : "Building thoughtful digital systems."}
       </h1>
      </div>
      <p className="text-sm sm:text-base md:text-lg leading-6 md:leading-8 text-white/62">
-      I am Ashish Biswas, a full-stack developer focused on creating polished
-      web experiences with strong engineering foundations. My work sits between
-      clean frontend interaction, reliable backend APIs, and product ideas that
-      feel useful in the real world.
+      {objective?.description ??
+       "I’m a full-stack developer focused on creating polished web experiences with strong engineering foundations—clean frontend interaction, reliable backend APIs, and product ideas that feel useful in the real world."}
      </p>
     </div>
 
@@ -45,10 +61,8 @@ export default function AboutPage() {
        Engineering Direction
       </h2>
       <p className="mt-3 md:mt-5 leading-6 md:leading-7 text-xs md:text-base text-white/60">
-       I like building applications that are clear to use, structured in code,
-       and flexible enough to grow. My current focus is on the MERN stack,
-       Next.js, TypeScript, API-driven dashboards, and interfaces that use
-       animation with purpose rather than noise.
+       {(objective?.description ?? "").slice(0, 240) ||
+        "I like building applications that are clear to use, structured in code, and flexible enough to grow. My current focus is on modern full-stack engineering with clean APIs and thoughtful interfaces."}
       </p>
      </article>
 
@@ -57,8 +71,9 @@ export default function AboutPage() {
        Now
       </h2>
       <p className="mt-3 md:mt-5 leading-6 md:leading-7 text-xs md:text-base text-white/60">
-       Studying Computer Science & Engineering at COER University while
-       developing portfolio, CMS, and research-oriented web projects.
+       {qualifications?.[0]
+        ? `${qualifications[0].educationLevel} • ${qualifications[0].institution}`
+        : "Building portfolio, CMS, and research-oriented web projects."}
       </p>
      </aside>
     </div>

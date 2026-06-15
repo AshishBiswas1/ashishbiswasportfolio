@@ -9,6 +9,7 @@ import { fetchAllData } from "@/services/api";
 export function usePortfolioData() {
  const {
   setIsLoading,
+  setUser,
   setProjects,
   setObjective,
   setSkills,
@@ -23,20 +24,23 @@ export function usePortfolioData() {
    try {
     const data = await fetchAllData();
 
-    // Populate context with fetched data
-    if (data.projects.length > 0) {
+    if (data.user) {
+     setUser(data.user);
+    }
+
+    if (Array.isArray(data.projects) && data.projects.length > 0) {
      setProjects(data.projects);
     }
     if (data.objective) {
      setObjective(data.objective);
     }
-    if (data.skills.length > 0) {
+    if (Array.isArray(data.skills) && data.skills.length > 0) {
      setSkills(data.skills);
     }
-    if (data.internships.length > 0) {
+    if (Array.isArray(data.internships) && data.internships.length > 0) {
      setInternships(data.internships);
     }
-    if (data.qualifications.length > 0) {
+    if (Array.isArray(data.qualifications) && data.qualifications.length > 0) {
      setQualifications(data.qualifications);
     }
     if (data.resume) {
@@ -52,6 +56,7 @@ export function usePortfolioData() {
   loadData();
  }, [
   setIsLoading,
+  setUser,
   setProjects,
   setObjective,
   setSkills,

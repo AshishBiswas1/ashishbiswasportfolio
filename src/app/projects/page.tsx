@@ -48,7 +48,7 @@ export default function ProjectsPage() {
           {project.title}
          </h2>
          <p className="mt-3 md:mt-5 leading-6 md:leading-7 text-xs md:text-sm text-white/58">
-          {project.description}
+          {project.shortdescription ?? project.description}
          </p>
         </div>
 

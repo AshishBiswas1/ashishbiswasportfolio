@@ -2,16 +2,19 @@
 
 import { motion } from "framer-motion";
 import type { ComponentProps } from "react";
-import Image from "next/image";
 
 type SectionStyle = ComponentProps<typeof motion.section>["style"];
 
 export interface Project {
  _id: string;
  title: string;
+ shortdescription: string;
  description: string;
  technologies: string[];
- image: string;
+ gitlink?: string[];
+ deployedlink?: string;
+ image?: string[];
+ mlScore?: number;
 }
 
 export default function ProjectsSection({
@@ -43,12 +46,13 @@ export default function ProjectsSection({
        className="group relative bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 p-4 sm:p-5 md:p-6 overflow-hidden hover:border-white/40 transition-colors duration-500 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl flex flex-col"
       >
        <div className="h-32 sm:h-36 md:h-40 mb-4 sm:mb-5 md:mb-6 overflow-hidden relative bg-black rounded-lg sm:rounded-xl shrink-0">
-        {project.image && project.image !== "default-project.jpg" ? (
-         <Image
-          src={project.image}
+       {project.image?.[0] && project.image?.[0] !== "default-project.jpg" ? (
+         // Avoid next/image remote-host restrictions; backend CMS images can be any host.
+         // eslint-disable-next-line @next/next/no-img-element
+         <img
+          src={project.image[0]}
           alt={project.title}
-          fill
-          className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 filter grayscale group-hover:grayscale-0"
+          className="absolute inset-0 h-full w-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 filter grayscale group-hover:grayscale-0"
          />
         ) : (
          <div className="absolute inset-0 flex items-center justify-center text-white/20 font-mono text-xs">
@@ -60,10 +64,15 @@ export default function ProjectsSection({
         {project.title}
        </h3>
        <p className="text-white/60 text-xs sm:text-sm font-light mb-4 sm:mb-5 md:mb-6 line-clamp-3 grow">
-        {project.description}
+        {project.shortdescription ?? project.description}
        </p>
+       {typeof project.mlScore === "number" ? (
+        <p className="mb-3 text-[10px] font-mono uppercase tracking-widest text-white/35">
+         ML Score {project.mlScore}
+        </p>
+       ) : null}
        <div className="flex flex-wrap gap-2 mt-auto">
-        {project.technologies.slice(0, 3).map((tech) => (
+        {(project.technologies ?? []).slice(0, 3).map((tech) => (
          <span
           key={tech}
           className="text-[8px] sm:text-[9px] md:text-[10px] font-mono text-white/40 uppercase tracking-widest border border-white/10 px-2 py-1 rounded-full bg-black/30"
@@ -77,7 +86,7 @@ export default function ProjectsSection({
     ) : (
      <div className="col-span-1 sm:col-span-2 md:col-span-3 flex items-center justify-center h-48 border border-white/10 bg-[#0a0a0a] rounded-xl sm:rounded-2xl md:rounded-3xl">
       <span className="text-white/40 font-mono uppercase tracking-widest text-xs sm:text-sm animate-pulse">
-       Awaiting Top 3 Projects from CMS...
+       Loading top projects from /api/v1/projects/?sort=-mlScore&limit=3
       </span>
      </div>
     )}

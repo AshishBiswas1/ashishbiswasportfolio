@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useScrollState } from "@/context/ScrollContext";
+import type { Skill } from "@/context/ScrollContext";
 
 export default function SkillsPage() {
  const { skills } = useScrollState();
@@ -10,7 +11,7 @@ export default function SkillsPage() {
  const groupedSkills = useMemo(() => {
   if (!skills || skills.length === 0) return [];
 
-  const groups: { [key: string]: any[] } = {};
+   const groups: Record<string, Skill[]> = {};
 
   skills.forEach((skill) => {
    const category = skill.category || "Other";

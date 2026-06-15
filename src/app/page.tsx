@@ -23,7 +23,7 @@ import { usePortfolioData } from "@/hooks/usePortfolioData";
 // This is an internal deprecation in the three.js library and doesn't affect functionality
 if (typeof window !== "undefined") {
  const originalWarn = console.warn;
- console.warn = function (...args: any[]) {
+ console.warn = function (...args: unknown[]) {
   const message = args.join(" ");
   if (
    message.includes("THREE.Clock") ||

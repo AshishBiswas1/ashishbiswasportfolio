@@ -1,13 +1,7 @@
 "use client";
-import {
- createContext,
- useContext,
- useState,
- useCallback,
- ReactNode,
-} from "react";
 
-// Define all data types
+import { createContext, useContext, useState, ReactNode } from "react";
+
 export interface Project {
  _id: string;
  title: string;
@@ -72,6 +66,19 @@ export interface Qualification {
  description?: string;
 }
 
+export interface UserProfile {
+ _id: string;
+ name: string;
+ email?: string;
+ designation?: string[];
+ photo?: string;
+ address?: string;
+ number?: number;
+ githubLink?: string;
+ linkedinLink?: string;
+ role?: string;
+}
+
 export interface Resume {
  _id: string;
  name?: string;
@@ -90,16 +97,25 @@ interface ScrollContextType {
  setActiveSection: (section: string) => void;
  isLoading: boolean;
  setIsLoading: (loading: boolean) => void;
+
+ user: UserProfile | null;
+ setUser: (user: UserProfile | null) => void;
+
  projects: Project[];
  setProjects: (projects: Project[]) => void;
+
  objective: Objective | null;
  setObjective: (objective: Objective | null) => void;
+
  skills: Skill[];
  setSkills: (skills: Skill[]) => void;
+
  internships: Internship[];
  setInternships: (internships: Internship[]) => void;
+
  qualifications: Qualification[];
  setQualifications: (qualifications: Qualification[]) => void;
+
  resume: Resume | null;
  setResume: (resume: Resume | null) => void;
 }
@@ -109,6 +125,8 @@ const ScrollContext = createContext<ScrollContextType | undefined>(undefined);
 export function ScrollProvider({ children }: { children: ReactNode }) {
  const [activeSection, setActiveSection] = useState("hero");
  const [isLoading, setIsLoading] = useState(true);
+
+ const [user, setUser] = useState<UserProfile | null>(null);
  const [projects, setProjects] = useState<Project[]>([]);
  const [objective, setObjective] = useState<Objective | null>(null);
  const [skills, setSkills] = useState<Skill[]>([]);
@@ -121,6 +139,10 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
   setActiveSection,
   isLoading,
   setIsLoading,
+
+  user,
+  setUser,
+
   projects,
   setProjects,
   objective,
