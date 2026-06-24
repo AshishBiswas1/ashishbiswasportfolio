@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import type { MotionValue } from "framer-motion";
-import { Canvas } from "@react-three/fiber";
-import {
- ContactShadows,
- Environment,
- Float,
- MeshTransmissionMaterial,
-} from "@react-three/drei";
 import AcademicsSection from "@/components/AcademicsSection";
 import HeroSection from "@/components/HeroSection";
 import InternshipsSection from "@/components/InternshipsSection";
@@ -18,54 +11,8 @@ import ProjectsSection from "@/components/ProjectsSection";
 import SkillsSection from "@/components/SkillsSection";
 import { useScrollState } from "@/context/ScrollContext";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
-
-// Suppress THREE.Clock deprecation warning from three.js library
-// This is an internal deprecation in the three.js library and doesn't affect functionality
-if (typeof window !== "undefined") {
- const originalWarn = console.warn;
- console.warn = function (...args: unknown[]) {
-  const message = args.join(" ");
-  if (
-   message.includes("THREE.Clock") ||
-   message.includes("THREE.Timer") ||
-   message.includes("This module has been deprecated")
-  ) {
-   return;
-  }
-  originalWarn.apply(console, args);
- };
-}
-
-function FloatingGem() {
- return (
-  <>
-   <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
-    <mesh rotation={[Math.PI / 4, Math.PI / 4, 0]}>
-     <icosahedronGeometry args={[2, 0]} />
-     <MeshTransmissionMaterial
-      backside
-      samples={4}
-      thickness={2}
-      roughness={0}
-      transmission={1}
-      ior={1.5}
-      chromaticAberration={0.5}
-      anisotropy={0.3}
-      color="#ffffff"
-     />
-    </mesh>
-   </Float>
-   <ContactShadows
-    position={[0, -3, 0]}
-    opacity={0.4}
-    scale={20}
-    blur={2}
-    far={4.5}
-   />
-   <Environment preset="city" />
-  </>
- );
-}
+import ScrollVideoBackground from "@/components/ScrollVideoBackground";
+import PremiumLoader from "@/components/PremiumLoader";
 
 function useSectionMotion(
  progress: MotionValue<number>,
@@ -77,7 +24,6 @@ function useSectionMotion(
  const z = useTransform(opacity, [0, 1], [-180, 0]);
  const filter = useTransform(opacity, (value) => {
   const blur = Math.min(10, Math.max(0, (1 - value) * 10));
-
   return `blur(${blur}px)`;
  });
  const visibility = useTransform(opacity, (value) =>
@@ -102,6 +48,19 @@ export default function HomePage() {
 
  // Load data from backend on mount
  usePortfolioData();
+
+ // Loading State linked to background images preloading
+ const [loadProgress, setLoadProgress] = useState(0);
+ const [isPageLoading, setIsPageLoading] = useState(true);
+
+ useEffect(() => {
+  if (loadProgress >= 100) {
+   const timer = setTimeout(() => {
+    setIsPageLoading(false);
+   }, 300); // Gentle offset to see progress hit 100% before transition
+   return () => clearTimeout(timer);
+  }
+ }, [loadProgress]);
 
  const heroMotion = useSectionMotion(
   scrollYProgress,
@@ -146,36 +105,43 @@ export default function HomePage() {
  }, [scrollYProgress, setActiveSection]);
 
  return (
-  <div
-   ref={containerRef}
-   className="relative h-[600vh] bg-black text-white font-sans"
-  >
-   <div className="sticky top-0 h-screen w-full overflow-hidden perspective-[1000px]">
-    <div className="absolute inset-0 z-0 opacity-80 mix-blend-screen pointer-events-auto">
-     <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-      <FloatingGem />
-     </Canvas>
-    </div>
+  <>
+   <AnimatePresence>
+    {isPageLoading && (
+     <PremiumLoader progress={loadProgress} />
+    )}
+   </AnimatePresence>
 
-    <div className="absolute bottom-8 w-full overflow-hidden whitespace-nowrap z-50 border-y border-white/10 py-3 mix-blend-difference">
-     <motion.div
-      className="inline-block text-sm tracking-[0.2em] uppercase font-bold text-white/50"
-      animate={{ x: [0, -1000] }}
-      transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-     >
-      MERN STACK - NEXT.JS - MONGODB - EXPRESS - REACT - NODE.JS - FULL-STACK
-      DEVELOPER - COER UNIVERSITY - DIGITAL EXPERIENCES - ARTIFICIAL
-      INTELLIGENCE - MERN STACK - NEXT.JS -
-     </motion.div>
-    </div>
+   <div
+    ref={containerRef}
+    className="relative h-[600vh] bg-transparent text-white font-sans"
+   >
+    <ScrollVideoBackground 
+     scrollYProgress={scrollYProgress} 
+     onProgress={setLoadProgress} 
+    />
+    
+    <div className="sticky top-0 h-screen w-full overflow-hidden perspective-[1000px]">
+     <div className="absolute bottom-8 w-full overflow-hidden whitespace-nowrap z-50 border-y border-white/10 py-3 mix-blend-difference">
+      <motion.div
+       className="inline-block text-sm tracking-[0.2em] uppercase font-bold text-white/50"
+       animate={{ x: [0, -1000] }}
+       transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+      >
+       MERN STACK - NEXT.JS - MONGODB - EXPRESS - REACT - NODE.JS - FULL-STACK
+       DEVELOPER - COER UNIVERSITY - DIGITAL EXPERIENCES - ARTIFICIAL
+       INTELLIGENCE - MERN STACK - NEXT.JS -
+      </motion.div>
+     </div>
 
-    <HeroSection style={heroMotion} />
-    <ObjectiveSection style={objectiveMotion} />
-    <AcademicsSection style={academicsMotion} />
-    <InternshipsSection style={internshipsMotion} />
-    <ProjectsSection style={projectsMotion} projects={projects} />
-    <SkillsSection style={skillsMotion} />
+     <HeroSection style={heroMotion} />
+     <ObjectiveSection style={objectiveMotion} />
+     <AcademicsSection style={academicsMotion} />
+     <InternshipsSection style={internshipsMotion} />
+     <ProjectsSection style={projectsMotion} projects={projects} />
+     <SkillsSection style={skillsMotion} />
+    </div>
    </div>
-  </div>
+  </>
  );
 }

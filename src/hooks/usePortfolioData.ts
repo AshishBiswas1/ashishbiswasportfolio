@@ -1,14 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useScrollState } from "@/context/ScrollContext";
-import { fetchAllData } from "@/services/api";
+import {
+ fetchUser,
+ fetchProjects,
+ fetchObjective,
+ fetchSkills,
+ fetchInternships,
+ fetchQualifications,
+ fetchResume,
+} from "@/services/api";
 
 /**
- * Hook to load all portfolio data from backend on component mount
- * Handles loading state and data population
+ * Hook to load portfolio data dynamically.
+ * - On the homepage (/), it lazy-loads each section as the user reaches it.
+ * - On subpages, it immediately loads the data required for that subpage.
+ * - Uses a ref to ensure each section's data is only requested once.
  */
 export function usePortfolioData() {
+ const pathname = usePathname();
  const {
-  setIsLoading,
+  activeSection,
+  setIsLoadingUser,
+  setIsLoadingObjective,
+  setIsLoadingSkills,
+  setIsLoadingInternships,
+  setIsLoadingQualifications,
+  setIsLoadingProjects,
+  setIsLoadingResume,
   setUser,
   setProjects,
   setObjective,
@@ -18,50 +37,183 @@ export function usePortfolioData() {
   setResume,
  } = useScrollState();
 
+ // Track fetched resources to prevent redundant API calls
+ const fetchedRef = useRef<Record<string, boolean>>({
+  user: false,
+  objective: false,
+  qualifications: false,
+  internships: false,
+  projects: false,
+  skills: false,
+  resume: false,
+ });
+
  useEffect(() => {
-  const loadData = async () => {
-   setIsLoading(true);
+  const isHome = pathname === "/";
+
+  const loadUserData = async () => {
+   if (fetchedRef.current.user) return;
+   fetchedRef.current.user = true;
+   setIsLoadingUser(true);
    try {
-    const data = await fetchAllData();
-
-    if (data.user) {
-     setUser(data.user);
-    }
-
-    if (Array.isArray(data.projects) && data.projects.length > 0) {
-     setProjects(data.projects);
-    }
-    if (data.objective) {
-     setObjective(data.objective);
-    }
-    if (Array.isArray(data.skills) && data.skills.length > 0) {
-     setSkills(data.skills);
-    }
-    if (Array.isArray(data.internships) && data.internships.length > 0) {
-     setInternships(data.internships);
-    }
-    if (Array.isArray(data.qualifications) && data.qualifications.length > 0) {
-     setQualifications(data.qualifications);
-    }
-    if (data.resume) {
-     setResume(data.resume);
-    }
+    const data = await fetchUser();
+    if (data) setUser(data);
    } catch (error) {
-    console.error("Failed to load portfolio data:", error);
+    console.error("Failed to load user:", error);
+    fetchedRef.current.user = false;
    } finally {
-    setIsLoading(false);
+    setIsLoadingUser(false);
    }
   };
 
-  loadData();
+  const loadObjectiveData = async () => {
+   if (fetchedRef.current.objective) return;
+   fetchedRef.current.objective = true;
+   setIsLoadingObjective(true);
+   try {
+    const data = await fetchObjective();
+    if (data) setObjective(data);
+   } catch (error) {
+    console.error("Failed to load objective:", error);
+    fetchedRef.current.objective = false;
+   } finally {
+    setIsLoadingObjective(false);
+   }
+  };
+
+  const loadQualificationsData = async () => {
+   if (fetchedRef.current.qualifications) return;
+   fetchedRef.current.qualifications = true;
+   setIsLoadingQualifications(true);
+   try {
+    const data = await fetchQualifications();
+    if (Array.isArray(data) && data.length > 0) setQualifications(data);
+   } catch (error) {
+    console.error("Failed to load qualifications:", error);
+    fetchedRef.current.qualifications = false;
+   } finally {
+    setIsLoadingQualifications(false);
+   }
+  };
+
+  const loadInternshipsData = async () => {
+   if (fetchedRef.current.internships) return;
+   fetchedRef.current.internships = true;
+   setIsLoadingInternships(true);
+   try {
+    const data = await fetchInternships();
+    if (Array.isArray(data) && data.length > 0) setInternships(data);
+   } catch (error) {
+    console.error("Failed to load internships:", error);
+    fetchedRef.current.internships = false;
+   } finally {
+    setIsLoadingInternships(false);
+   }
+  };
+
+  const loadProjectsData = async () => {
+   if (fetchedRef.current.projects) return;
+   fetchedRef.current.projects = true;
+   setIsLoadingProjects(true);
+   try {
+    const data = await fetchProjects();
+    if (Array.isArray(data) && data.length > 0) setProjects(data);
+   } catch (error) {
+    console.error("Failed to load projects:", error);
+    fetchedRef.current.projects = false;
+   } finally {
+    setIsLoadingProjects(false);
+   }
+  };
+
+  const loadSkillsData = async () => {
+   if (fetchedRef.current.skills) return;
+   fetchedRef.current.skills = true;
+   setIsLoadingSkills(true);
+   try {
+    const data = await fetchSkills();
+    if (Array.isArray(data) && data.length > 0) setSkills(data);
+   } catch (error) {
+    console.error("Failed to load skills:", error);
+    fetchedRef.current.skills = false;
+   } finally {
+    setIsLoadingSkills(false);
+   }
+  };
+
+  const loadResumeData = async () => {
+   if (fetchedRef.current.resume) return;
+   fetchedRef.current.resume = true;
+   setIsLoadingResume(true);
+   try {
+    const data = await fetchResume();
+    if (data) setResume(data);
+   } catch (error) {
+    console.error("Failed to load resume:", error);
+    fetchedRef.current.resume = false;
+   } finally {
+    setIsLoadingResume(false);
+   }
+  };
+
+  // Route-Specific / Lazy-Load logic
+  if (isHome) {
+   // Homepage: lazy load by activeSection
+   if (activeSection === "hero") {
+    loadUserData();
+   } else if (activeSection === "objective") {
+    loadObjectiveData();
+   } else if (activeSection === "academics") {
+    loadQualificationsData();
+   } else if (activeSection === "internships") {
+    loadInternshipsData();
+   } else if (activeSection === "projects") {
+    loadProjectsData();
+   } else if (activeSection === "skills") {
+    loadSkillsData();
+   }
+  } else {
+   // Standalone Subpages: immediately fetch what is required
+   if (pathname === "/about") {
+    loadUserData();
+    loadObjectiveData();
+    loadSkillsData();
+    loadQualificationsData();
+   } else if (pathname === "/objective") {
+    loadObjectiveData();
+   } else if (pathname === "/education") {
+    loadQualificationsData();
+   } else if (pathname === "/internships") {
+    loadInternshipsData();
+   } else if (pathname === "/projects") {
+    loadProjectsData();
+   } else if (pathname === "/skills") {
+    loadSkillsData();
+   } else if (pathname === "/resume") {
+    loadUserData();
+    loadResumeData();
+    loadQualificationsData();
+    loadInternshipsData();
+    loadObjectiveData();
+    loadSkillsData();
+   }
+  }
  }, [
-  setIsLoading,
+  pathname,
+  activeSection,
   setUser,
-  setProjects,
   setObjective,
-  setSkills,
-  setInternships,
   setQualifications,
+  setInternships,
+  setProjects,
+  setSkills,
   setResume,
+  setIsLoadingUser,
+  setIsLoadingObjective,
+  setIsLoadingQualifications,
+  setIsLoadingInternships,
+  setIsLoadingProjects,
+  setIsLoadingSkills,
+  setIsLoadingResume,
  ]);
 }

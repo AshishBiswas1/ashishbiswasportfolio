@@ -1,9 +1,32 @@
 "use client";
 
 import { useScrollState } from "@/context/ScrollContext";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
+
+function SubpageProjectCardSkeleton() {
+ return (
+  <article className="group flex min-h-95 sm:min-h-105 flex-col justify-between border border-white/5 bg-white/4 p-4 md:p-7 animate-pulse">
+   <div>
+    <div className="flex items-center justify-between border-b border-white/10 pb-3 md:pb-5">
+     <div className="h-4 w-6 bg-white/10 rounded" />
+     <div className="h-4 w-10 bg-white/10 rounded" />
+    </div>
+    <div className="mt-4 md:mt-8 h-8 w-2/3 bg-white/10 rounded mb-3" />
+    <div className="h-4 w-full bg-white/5 rounded mb-2" />
+    <div className="h-4 w-5/6 bg-white/5 rounded" />
+   </div>
+   <div className="mt-6 md:mt-10 flex flex-wrap gap-2">
+    <div className="h-6 w-12 bg-white/10 rounded" />
+    <div className="h-6 w-16 bg-white/10 rounded" />
+    <div className="h-6 w-14 bg-white/10 rounded" />
+   </div>
+  </article>
+ );
+}
 
 export default function ProjectsPage() {
- const { projects } = useScrollState();
+ usePortfolioData();
+ const { projects, isLoadingProjects } = useScrollState();
 
  return (
   <main className="min-h-screen bg-[#050505] px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-white lg:px-10">
@@ -24,7 +47,13 @@ export default function ProjectsPage() {
     </div>
 
     <div className="mt-8 md:mt-14 grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-     {projects && projects.length > 0 ? (
+     {isLoadingProjects ? (
+      <>
+       <SubpageProjectCardSkeleton />
+       <SubpageProjectCardSkeleton />
+       <SubpageProjectCardSkeleton />
+      </>
+     ) : projects && projects.length > 0 ? (
       projects.map((project, index) => (
        <article
         key={project._id}
@@ -67,7 +96,7 @@ export default function ProjectsPage() {
       ))
      ) : (
       <div className="col-span-full text-center text-white/50">
-       Loading projects...
+       No projects found.
       </div>
      )}
     </div>

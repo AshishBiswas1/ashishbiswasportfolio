@@ -1,9 +1,11 @@
 "use client";
 
 import { useScrollState } from "@/context/ScrollContext";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export default function ObjectivePage() {
- const { objective } = useScrollState();
+ usePortfolioData();
+ const { objective, isLoadingObjective } = useScrollState();
 
  const headline =
   objective?.headline ??
@@ -19,40 +21,57 @@ export default function ObjectivePage() {
      Career Objective
     </p>
     <h1 className="mt-3 md:mt-5 max-w-5xl text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
-     {headline}
+     {isLoadingObjective ? "Loading..." : headline}
     </h1>
 
-    <div className="mt-8 md:mt-14 grid gap-5 md:gap-8 lg:grid-cols-[1fr_0.8fr]">
-     <article className="border border-white/10 bg-white/4 p-4 md:p-8">
-      <h2 className="text-lg md:text-2xl font-black uppercase tracking-tight">
-       Direction
-      </h2>
-      <p className="mt-4 md:mt-6 text-sm md:text-base lg:text-lg leading-6 md:leading-8 text-white/62">
-       {description}
-      </p>
-     </article>
+    {isLoadingObjective ? (
+     <div className="mt-8 md:mt-14 grid gap-5 md:gap-8 lg:grid-cols-[1fr_0.8fr] animate-pulse">
+      <article className="border border-white/5 bg-white/4 p-4 md:p-8 space-y-4">
+       <div className="h-6 w-1/4 bg-white/10 rounded" />
+       <div className="h-4 w-full bg-white/5 rounded" />
+       <div className="h-4 w-5/6 bg-white/5 rounded" />
+       <div className="h-4 w-4/5 bg-white/5 rounded" />
+      </article>
+      <aside className="border border-white/5 p-4 md:p-8 space-y-4">
+       <div className="h-6 w-1/3 bg-white/10 rounded" />
+       <div className="h-4 w-1/2 bg-white/5 rounded" />
+       <div className="h-4 w-2/3 bg-white/5 rounded" />
+       <div className="h-4 w-1/3 bg-white/5 rounded" />
+      </aside>
+     </div>
+    ) : (
+     <div className="mt-8 md:mt-14 grid gap-5 md:gap-8 lg:grid-cols-[1fr_0.8fr]">
+      <article className="border border-white/10 bg-white/4 p-4 md:p-8">
+       <h2 className="text-lg md:text-2xl font-black uppercase tracking-tight">
+        Direction
+       </h2>
+       <p className="mt-4 md:mt-6 text-sm md:text-base lg:text-lg leading-6 md:leading-8 text-white/62">
+        {description}
+       </p>
+      </article>
 
-     <aside className="border border-white/10 p-4 md:p-8">
-      <h2 className="text-lg md:text-2xl font-black uppercase tracking-tight">
-       What I value
-      </h2>
-      <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
-       {(objective?.focusAreas ?? []).map((area) => (
-        <p
-         key={area.title}
-         className="border-l border-white/20 pl-3 md:pl-4 text-xs md:text-sm text-white/60"
-        >
-         {area.title}
-        </p>
-       ))}
-       {(!objective?.focusAreas || objective.focusAreas.length === 0) && (
-        <p className="border-l border-white/20 pl-3 md:pl-4 text-xs md:text-sm text-white/60">
-         {description}
-        </p>
-       )}
-      </div>
-     </aside>
-    </div>
+      <aside className="border border-white/10 p-4 md:p-8">
+       <h2 className="text-lg md:text-2xl font-black uppercase tracking-tight">
+        What I value
+       </h2>
+       <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
+        {(objective?.focusAreas ?? []).map((area) => (
+         <p
+          key={area.title}
+          className="border-l border-white/20 pl-3 md:pl-4 text-xs md:text-sm text-white/60"
+         >
+          {area.title}
+         </p>
+        ))}
+        {(!objective?.focusAreas || objective.focusAreas.length === 0) && (
+         <p className="border-l border-white/20 pl-3 md:pl-4 text-xs md:text-sm text-white/60">
+          {description}
+         </p>
+        )}
+       </div>
+      </aside>
+     </div>
+    )}
    </section>
   </main>
  );

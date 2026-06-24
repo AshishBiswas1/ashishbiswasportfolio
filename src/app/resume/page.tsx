@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useScrollState } from "@/context/ScrollContext";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export default function ResumePage() {
+ usePortfolioData();
  const { user, resume, qualifications, internships, objective, skills } =
   useScrollState();
 

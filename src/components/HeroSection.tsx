@@ -18,19 +18,47 @@ export default function HeroSection({ style }: { style: SectionStyle }) {
   return list.length > 0 ? list : ["Full-Stack Developer"];
  }, [user?.designation]);
 
+ const [displayedText, setDisplayedText] = useState("");
+ const [isDeleting, setIsDeleting] = useState(false);
  const [designationIndex, setDesignationIndex] = useState(0);
+ const [typingSpeed, setTypingSpeed] = useState(100);
 
  useEffect(() => {
-  if (designations.length <= 1) return;
+  if (designations.length === 0) return;
 
-  const id = window.setInterval(() => {
-   setDesignationIndex((prev) => (prev + 1) % designations.length);
-  }, 2000);
+  const currentFullText = designations[designationIndex];
 
-  return () => window.clearInterval(id);
- }, [designations.length]);
+  const handleType = () => {
+   if (!isDeleting) {
+    // Typing forward
+    const nextText = currentFullText.slice(0, displayedText.length + 1);
+    setDisplayedText(nextText);
+    setTypingSpeed(80); // typing speed
 
- const currentDesignation = designations[designationIndex];
+    if (nextText === currentFullText) {
+     // Pause at full text
+     setTypingSpeed(1800);
+     setIsDeleting(true);
+    }
+   } else {
+    // Erasing backward
+    if (displayedText.length === 0) {
+     // Move to next designation
+     setIsDeleting(false);
+     setDesignationIndex((prev) => (prev + 1) % designations.length);
+     setTypingSpeed(400); // pause before next word
+     return;
+    }
+
+    const nextText = currentFullText.slice(0, displayedText.length - 1);
+    setDisplayedText(nextText);
+    setTypingSpeed(45); // erasing speed
+   }
+  };
+
+  const timer = setTimeout(handleType, typingSpeed);
+  return () => clearTimeout(timer);
+ }, [displayedText, isDeleting, designationIndex, designations, typingSpeed]);
 
  const firstName = name.split(" ")[0] ?? name;
  const lastName = name.split(" ").slice(1).join(" ") ?? user?.name ?? "Biswas";
@@ -47,8 +75,9 @@ export default function HeroSection({ style }: { style: SectionStyle }) {
       {lastName}
      </h1>
      <div className="w-16 sm:w-20 md:w-24 h-0.5 sm:h-1 bg-white mb-4 sm:mb-6 md:mb-8" />
-     <h2 className="text-base sm:text-lg md:text-2xl lg:text-3xl text-white/70 font-light tracking-widest uppercase">
-      {currentDesignation}
+     <h2 className="text-base sm:text-lg md:text-2xl lg:text-3xl text-white/70 font-light tracking-widest uppercase flex items-center min-h-[1.5em]">
+      <span>{displayedText}</span>
+      <span className="inline-block w-0.5 h-5 md:h-7 bg-white/70 ml-1.5 animate-pulse shrink-0" />
      </h2>
     </div>
 
@@ -61,7 +90,10 @@ export default function HeroSection({ style }: { style: SectionStyle }) {
         src={photo}
         alt={`${name} profile`}
         className="h-full w-full object-cover"
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
         onError={(e) => {
+         // fallback if error loading photo
          (e.currentTarget as HTMLImageElement).src = "/file.svg";
         }}
        />

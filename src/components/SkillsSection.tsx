@@ -7,7 +7,7 @@ import { useScrollState } from "@/context/ScrollContext";
 type SectionStyle = ComponentProps<typeof motion.section>["style"];
 
 export default function SkillsSection({ style }: { style: SectionStyle }) {
- const { skills } = useScrollState();
+ const { skills, isLoadingSkills } = useScrollState();
 
  // Display skills if available, otherwise show placeholder
  const displaySkills = skills && skills.length > 0 ? skills : [];
@@ -25,7 +25,18 @@ export default function SkillsSection({ style }: { style: SectionStyle }) {
      Technical Arsenal
     </h2>
     <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 max-w-4xl mx-auto">
-     {displaySkills.length > 0 ? (
+     {isLoadingSkills ? (
+      <>
+       <div className="h-10 w-24 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-28 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-20 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-32 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-24 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-22 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-26 bg-white/10 rounded-full animate-pulse" />
+       <div className="h-10 w-30 bg-white/10 rounded-full animate-pulse" />
+      </>
+     ) : displaySkills.length > 0 ? (
       displaySkills.map((skill) => (
        <div
         key={skill._id}
@@ -35,7 +46,7 @@ export default function SkillsSection({ style }: { style: SectionStyle }) {
        </div>
       ))
      ) : (
-      <div className="text-white/50 text-sm">Loading skills...</div>
+      <div className="text-white/50 text-sm">No skills found</div>
      )}
     </div>
    </div>

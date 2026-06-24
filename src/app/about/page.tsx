@@ -2,8 +2,10 @@
 
 import { useMemo } from "react";
 import { useScrollState } from "@/context/ScrollContext";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export default function AboutPage() {
+ usePortfolioData();
  const { user, objective, skills, qualifications } = useScrollState();
 
  const highlights = useMemo(() => {

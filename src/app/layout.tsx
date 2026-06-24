@@ -1,3 +1,5 @@
+import SuppressWarnings from "@/components/SuppressWarnings";
+import "@/utils/suppressWarnings";
 import "./globals.css";
 import { ScrollProvider } from "@/context/ScrollContext";
 import Footer from "@/components/Footer";
@@ -27,6 +29,7 @@ export default function RootLayout({
     <meta charSet="utf-8" />
    </head>
    <body>
+    <SuppressWarnings />
     <ScrollProvider>
      <Navbar />
      {children}

@@ -98,6 +98,22 @@ interface ScrollContextType {
  isLoading: boolean;
  setIsLoading: (loading: boolean) => void;
 
+ // Individual section loading states
+ isLoadingUser: boolean;
+ setIsLoadingUser: (loading: boolean) => void;
+ isLoadingObjective: boolean;
+ setIsLoadingObjective: (loading: boolean) => void;
+ isLoadingSkills: boolean;
+ setIsLoadingSkills: (loading: boolean) => void;
+ isLoadingInternships: boolean;
+ setIsLoadingInternships: (loading: boolean) => void;
+ isLoadingQualifications: boolean;
+ setIsLoadingQualifications: (loading: boolean) => void;
+ isLoadingProjects: boolean;
+ setIsLoadingProjects: (loading: boolean) => void;
+ isLoadingResume: boolean;
+ setIsLoadingResume: (loading: boolean) => void;
+
  user: UserProfile | null;
  setUser: (user: UserProfile | null) => void;
 
@@ -126,6 +142,15 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
  const [activeSection, setActiveSection] = useState("hero");
  const [isLoading, setIsLoading] = useState(true);
 
+ // Individual section loading states
+ const [isLoadingUser, setIsLoadingUser] = useState(true);
+ const [isLoadingObjective, setIsLoadingObjective] = useState(true);
+ const [isLoadingSkills, setIsLoadingSkills] = useState(true);
+ const [isLoadingInternships, setIsLoadingInternships] = useState(true);
+ const [isLoadingQualifications, setIsLoadingQualifications] = useState(true);
+ const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+ const [isLoadingResume, setIsLoadingResume] = useState(true);
+
  const [user, setUser] = useState<UserProfile | null>(null);
  const [projects, setProjects] = useState<Project[]>([]);
  const [objective, setObjective] = useState<Objective | null>(null);
@@ -139,6 +164,21 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
   setActiveSection,
   isLoading,
   setIsLoading,
+
+  isLoadingUser,
+  setIsLoadingUser,
+  isLoadingObjective,
+  setIsLoadingObjective,
+  isLoadingSkills,
+  setIsLoadingSkills,
+  isLoadingInternships,
+  setIsLoadingInternships,
+  isLoadingQualifications,
+  setIsLoadingQualifications,
+  isLoadingProjects,
+  setIsLoadingProjects,
+  isLoadingResume,
+  setIsLoadingResume,
 
   user,
   setUser,

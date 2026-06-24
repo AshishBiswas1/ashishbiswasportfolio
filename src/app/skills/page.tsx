@@ -2,16 +2,18 @@
 
 import { useMemo } from "react";
 import { useScrollState } from "@/context/ScrollContext";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 import type { Skill } from "@/context/ScrollContext";
 
 export default function SkillsPage() {
- const { skills } = useScrollState();
+ usePortfolioData();
+ const { skills, isLoadingSkills } = useScrollState();
 
  // Group skills by category
  const groupedSkills = useMemo(() => {
   if (!skills || skills.length === 0) return [];
 
-   const groups: Record<string, Skill[]> = {};
+  const groups: Record<string, Skill[]> = {};
 
   skills.forEach((skill) => {
    const category = skill.category || "Other";
@@ -48,7 +50,26 @@ export default function SkillsPage() {
     </div>
 
     <div className="mt-8 md:mt-14 grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
-     {groupedSkills.length > 0 ? (
+     {isLoadingSkills ? (
+      <>
+       <article className="border border-white/5 bg-white/4 p-4 md:p-7 animate-pulse space-y-4">
+        <div className="h-6 w-1/3 bg-white/10 rounded" />
+        <div className="flex flex-wrap gap-2 pt-2">
+         <div className="h-8 w-20 bg-white/5 rounded" />
+         <div className="h-8 w-24 bg-white/5 rounded" />
+         <div className="h-8 w-16 bg-white/5 rounded" />
+        </div>
+       </article>
+       <article className="border border-white/5 bg-white/4 p-4 md:p-7 animate-pulse space-y-4">
+        <div className="h-6 w-1/3 bg-white/10 rounded" />
+        <div className="flex flex-wrap gap-2 pt-2">
+         <div className="h-8 w-24 bg-white/5 rounded" />
+         <div className="h-8 w-18 bg-white/5 rounded" />
+         <div className="h-8 w-22 bg-white/5 rounded" />
+        </div>
+       </article>
+      </>
+     ) : groupedSkills.length > 0 ? (
       groupedSkills.map((group) => (
        <article
         key={group.title}
@@ -71,7 +92,7 @@ export default function SkillsPage() {
       ))
      ) : (
       <div className="col-span-full text-center text-white/50">
-       Loading skills...
+       No skills found.
       </div>
      )}
     </div>
