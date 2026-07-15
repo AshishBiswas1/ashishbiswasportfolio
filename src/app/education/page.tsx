@@ -5,15 +5,13 @@ import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 function SubpageCardSkeleton() {
  return (
-  <article className="border border-white/5 bg-white/4 p-6 flex flex-col justify-between min-h-[220px] animate-pulse">
-   <div>
-    <div className="h-3 w-16 bg-white/10 rounded mb-3" />
-    <div className="h-6 w-3/4 bg-white/10 rounded mb-2" />
-    <div className="h-4 w-1/2 bg-white/10 rounded mb-4" />
-    <div className="h-3 w-full bg-white/5 rounded mb-2" />
-    <div className="h-3 w-5/6 bg-white/5 rounded mb-2" />
+  <article className="bg-void p-6 flex flex-col justify-between min-h-[240px] animate-pulse border border-border-subtle rounded-[4px]">
+   <div className="space-y-3">
+    <div className="h-3 w-16 bg-white/10 rounded" />
+    <div className="h-6 w-3/4 bg-white/10 rounded" />
+    <div className="h-4 w-1/2 bg-white/10 rounded" />
    </div>
-   <div className="h-6 w-24 bg-white/10 rounded-full mt-6" />
+   <div className="h-5 w-20 bg-white/10 rounded mt-6" />
   </article>
  );
 }
@@ -24,24 +22,29 @@ export default function EducationPage() {
  const primary = qualifications?.[0];
 
  return (
-  <main className="min-h-screen bg-[#050505] px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-white lg:px-10">
-   <section className="mx-auto max-w-6xl">
+  <main className="min-h-screen bg-void px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-text-primary lg:px-10 font-sans">
+   <section className="mx-auto max-w-6xl text-left">
     <div className="grid gap-6 md:gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-end">
      <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/40">
+      <p className="font-mono text-[10px] tracking-[0.28em] uppercase text-gold">
        Academic Qualification
       </p>
-      <h1 className="mt-3 md:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
-       {isLoadingQualifications ? "Loading..." : primary?.degree ? `${primary.degree} Foundation.` : "Academic Foundation."}
+      <h1 className="mt-3 md:mt-5 font-display text-[42px] sm:text-[54px] md:text-[66px] font-light leading-tight tracking-[-0.025em] text-text-primary">
+       {isLoadingQualifications 
+        ? "Loading..." 
+        : primary?.degree 
+         ? `${primary.degree} Foundation.` 
+         : "Academic Foundation."}
       </h1>
      </div>
-     <p className="text-sm sm:text-base md:text-lg leading-6 md:leading-8 text-white/62">
+     <p className="text-sm sm:text-base md:text-lg leading-relaxed text-text-secondary font-light">
       {primary?.description ??
        "Academic work gives structure to my practical development interests, especially around software design and applied learning."}
      </p>
     </div>
 
-    <div className="mt-8 md:mt-14 grid gap-6 md:grid-cols-3">
+    {/* Academia Grid */}
+    <div className="mt-10 md:mt-14 grid gap-px bg-border-subtle border border-border-subtle rounded-[4px] overflow-hidden shadow-2xl">
      {isLoadingQualifications ? (
       <>
        <SubpageCardSkeleton />
@@ -52,38 +55,40 @@ export default function EducationPage() {
       qualifications.map((q) => (
        <article
         key={q._id}
-        className="border border-white/10 bg-white/4 p-6 flex flex-col justify-between min-h-[220px]"
+        className="bg-void p-8 flex flex-col justify-between min-h-[250px] relative group transition-colors duration-300 hover:bg-surface-card"
        >
-        <div>
-         <p className="text-xs uppercase tracking-[0.2em] text-white/35 mb-2">
+        <div className="flex flex-col gap-4">
+         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">
           {q.educationLevel}
          </p>
-         <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight">
+         <h2 className="font-display text-[22px] font-semibold leading-[1.2] text-text-primary">
           {q.institution}
          </h2>
-         <p className="mt-2 text-sm text-white/65">
+         <p className="text-[13px] text-text-secondary font-light">
           {q.degree} {q.fieldOfStudy ? `• ${q.fieldOfStudy}` : ""}
          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 mt-6">
          {q.score ? (
-          <p className="mt-2 text-xs font-mono text-white/50 bg-white/5 inline-block px-2 py-0.5 rounded border border-white/5">
+          <span className="font-mono text-[11px] tracking-[0.08em] text-gold border border-gold-dim px-2.5 py-1 rounded-[2px] w-fit">
            Score: {q.score}
-          </p>
+          </span>
          ) : null}
-         {q.description ? (
-          <p className="mt-3 text-xs text-white/50 leading-relaxed font-light">
-           {q.description}
-          </p>
+         
+         {q.duration?.startYear || q.duration?.endYear ? (
+          <span className="font-mono text-[10px] tracking-[0.1em] text-text-muted uppercase">
+           {q.duration.startYear} — {q.duration.endYear || "Present"}
+          </span>
          ) : null}
         </div>
-        {q.duration?.startYear || q.duration?.endYear ? (
-         <div className="mt-6 inline-block self-start border border-white/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.18em] text-white/55 bg-white/5 rounded-full">
-          {q.duration.startYear} - {q.duration.endYear || "Present"}
-         </div>
-        ) : null}
+
+        {/* Sweep gold border transition */}
+        <div className="absolute bottom-0 left-0 h-[2px] bg-gold w-0 group-hover:w-full transition-all duration-500 ease-out" />
        </article>
       ))
      ) : (
-      <div className="col-span-full text-center text-white/50 py-12">
+      <div className="col-span-full text-center text-text-muted py-16 bg-void">
        No qualifications found.
       </div>
      )}

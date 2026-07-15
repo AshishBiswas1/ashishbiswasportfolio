@@ -51,28 +51,29 @@ export default function ContactPage() {
  };
 
  return (
-  <main className="min-h-screen bg-[#050505] px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-white lg:px-10">
-   <section className="mx-auto grid max-w-6xl gap-6 md:gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+  <main className="min-h-screen bg-void px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-text-primary lg:px-10 font-sans">
+   <section className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] text-left">
     <div>
-     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/40">
+     <p className="font-mono text-[10px] tracking-[0.28em] uppercase text-gold">
       Contact
      </p>
-     <h1 className="mt-3 md:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
+     <h1 className="mt-3 md:mt-5 font-display text-[42px] sm:text-[54px] md:text-[66px] font-light leading-tight tracking-[-0.025em] text-text-primary">
       Let&apos;s build something useful.
      </h1>
-     <p className="mt-4 md:mt-7 text-sm sm:text-base md:text-lg leading-6 md:leading-8 text-white/62">
-      Share the role, collaboration idea, or project context. The form is ready
-      for frontend capture and can be wired to an API or email service when the
-      backend contact flow is added.
+     <p className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg leading-relaxed text-text-secondary font-light">
+      Share the role, collaboration idea, or project context. I am available for internships and full-stack software development projects.
      </p>
 
-     <div className="mt-6 md:mt-10 grid gap-3 md:gap-4">
+     <div className="mt-8 md:mt-10 grid gap-4">
       {contactCards.map((card) => (
-       <div key={card.label} className="border border-white/10 p-3 md:p-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-white/35">
+       <div 
+        key={card.label} 
+        className="bg-surface-card border border-border-subtle hover:border-gold-dim transition-all duration-300 p-5 rounded-[4px]"
+       >
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold mb-1">
          {card.label}
         </p>
-        <p className="mt-1 md:mt-2 text-xs md:text-sm text-white/70">
+        <p className="text-[13px] text-text-secondary leading-relaxed font-light">
          {card.value}
         </p>
        </div>
@@ -82,11 +83,11 @@ export default function ContactPage() {
 
     <form
      onSubmit={handleSubmit}
-      className="border border-white/10 bg-white/[0.04] p-4 md:p-6 lg:p-8 shadow-2xl shadow-black/30"
+     className="border border-border-subtle bg-surface-card p-6 md:p-8 rounded-[4px] shadow-2xl flex flex-col gap-5"
     >
-     <div className="grid gap-3 md:gap-5 sm:grid-cols-2">
+     <div className="grid gap-5 sm:grid-cols-2">
       <label className="block">
-       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+       <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-secondary">
         Name
        </span>
        <input
@@ -95,12 +96,13 @@ export default function ContactPage() {
         value={formData.name}
         onChange={handleChange}
         required
-        className="mt-2 md:mt-3 w-full border border-white/10 bg-black/40 px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm text-white outline-none transition focus:border-white/40"
+        className="mt-2.5 w-full border border-border-mid bg-void px-4 py-3 text-xs md:text-sm text-text-primary outline-none transition focus:border-gold focus:ring-1 focus:ring-gold rounded-[2px] font-mono"
         placeholder="Your name"
        />
       </label>
+      
       <label className="block">
-       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+       <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-secondary">
         Email
        </span>
        <input
@@ -109,14 +111,14 @@ export default function ContactPage() {
         value={formData.email}
         onChange={handleChange}
         required
-        className="mt-2 md:mt-3 w-full border border-white/10 bg-black/40 px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm text-white outline-none transition focus:border-white/40"
+        className="mt-2.5 w-full border border-border-mid bg-void px-4 py-3 text-xs md:text-sm text-text-primary outline-none transition focus:border-gold focus:ring-1 focus:ring-gold rounded-[2px] font-mono"
         placeholder="you@example.com"
        />
       </label>
      </div>
 
-     <label className="mt-3 md:mt-5 block">
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+     <label className="block">
+      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-secondary">
        Subject
       </span>
       <input
@@ -125,13 +127,13 @@ export default function ContactPage() {
        value={formData.subject}
        onChange={handleChange}
        required
-       className="mt-2 md:mt-3 w-full border border-white/10 bg-black/40 px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm text-white outline-none transition focus:border-white/40"
+       className="mt-2.5 w-full border border-border-mid bg-void px-4 py-3 text-xs md:text-sm text-text-primary outline-none transition focus:border-gold focus:ring-1 focus:ring-gold rounded-[2px] font-mono"
        placeholder="Internship, project, collaboration"
       />
      </label>
 
-     <label className="mt-3 md:mt-5 block">
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+     <label className="block">
+      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-secondary">
        Message
       </span>
       <textarea
@@ -140,7 +142,7 @@ export default function ContactPage() {
        value={formData.message}
        onChange={handleChange}
        required
-       className="mt-2 md:mt-3 w-full resize-none border border-white/10 bg-black/40 px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm text-white outline-none transition focus:border-white/40"
+       className="mt-2.5 w-full resize-none border border-border-mid bg-void px-4 py-3 text-xs md:text-sm text-text-primary outline-none transition focus:border-gold focus:ring-1 focus:ring-gold rounded-[2px] font-mono"
        placeholder="Tell me what you are building or hiring for."
       />
      </label>
@@ -148,18 +150,18 @@ export default function ContactPage() {
      <button
       type="submit"
       disabled={isSubmitting}
-      className="mt-4 md:mt-6 w-full border border-white bg-white px-4 md:px-5 py-3 md:py-4 text-xs md:text-sm font-bold uppercase tracking-[0.18em] text-black transition hover:bg-transparent hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+      className="mt-2 w-full border border-gold bg-gold px-5 py-4 text-xs md:text-sm font-bold uppercase tracking-[0.18em] text-void transition hover:bg-transparent hover:text-gold disabled:opacity-50 disabled:cursor-not-allowed font-mono rounded-[2px] cursor-pointer"
      >
       {isSubmitting ? "Sending..." : "Send Message"}
      </button>
 
      {submitStatus === "success" && (
-      <p className="mt-4 text-sm text-green-400 text-center">
+      <p className="text-sm text-green-400 text-center font-mono mt-2">
        ✓ Message sent successfully! I&apos;ll get back to you soon.
       </p>
      )}
      {submitStatus === "error" && (
-      <p className="mt-4 text-sm text-red-400 text-center">
+      <p className="text-sm text-red-400 text-center font-mono mt-2">
        ✗ Failed to send message. Please try again.
       </p>
      )}

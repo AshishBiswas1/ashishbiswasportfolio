@@ -23,7 +23,6 @@ export default function SkillsPage() {
    groups[category].push(skill);
   });
 
-  // Convert to array format and sort categories
   return Object.entries(groups).map(([title, skillList]) => ({
    title,
    skills: skillList.map((s) => s.name),
@@ -31,41 +30,40 @@ export default function SkillsPage() {
  }, [skills]);
 
  return (
-  <main className="min-h-screen bg-[#050505] px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-white lg:px-10">
-   <section className="mx-auto max-w-6xl">
+  <main className="min-h-screen bg-void px-4 pb-16 sm:px-6 md:pb-24 md:pt-32 pt-24 text-text-primary lg:px-10 font-sans">
+   <section className="mx-auto max-w-6xl text-left">
     <div className="grid gap-6 md:gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
      <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/40">
+      <p className="font-mono text-[10px] tracking-[0.28em] uppercase text-gold">
        Technical Skills
       </p>
-      <h1 className="mt-3 md:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
+      <h1 className="mt-3 md:mt-5 font-display text-[42px] sm:text-[54px] md:text-[66px] font-light leading-tight tracking-[-0.025em] text-text-primary">
        A practical full-stack toolkit.
       </h1>
      </div>
-     <p className="text-sm sm:text-base md:text-lg leading-6 md:leading-8 text-white/62">
+     <p className="text-sm sm:text-base md:text-lg leading-relaxed text-text-secondary font-light">
       Skills are organized around building usable products: polished interfaces,
       stable APIs, database-backed workflows, and enough AI literacy to explore
       intelligent features responsibly.
      </p>
     </div>
 
-    <div className="mt-8 md:mt-14 grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+    {/* Skills Category Grid */}
+    <div className="mt-10 md:mt-14 grid gap-6 grid-cols-1 md:grid-cols-2">
      {isLoadingSkills ? (
       <>
-       <article className="border border-white/5 bg-white/4 p-4 md:p-7 animate-pulse space-y-4">
+       <article className="border border-border-subtle bg-surface-card p-8 rounded-[4px] animate-pulse space-y-4">
         <div className="h-6 w-1/3 bg-white/10 rounded" />
         <div className="flex flex-wrap gap-2 pt-2">
          <div className="h-8 w-20 bg-white/5 rounded" />
          <div className="h-8 w-24 bg-white/5 rounded" />
-         <div className="h-8 w-16 bg-white/5 rounded" />
         </div>
        </article>
-       <article className="border border-white/5 bg-white/4 p-4 md:p-7 animate-pulse space-y-4">
+       <article className="border border-border-subtle bg-surface-card p-8 rounded-[4px] animate-pulse space-y-4">
         <div className="h-6 w-1/3 bg-white/10 rounded" />
         <div className="flex flex-wrap gap-2 pt-2">
          <div className="h-8 w-24 bg-white/5 rounded" />
          <div className="h-8 w-18 bg-white/5 rounded" />
-         <div className="h-8 w-22 bg-white/5 rounded" />
         </div>
        </article>
       </>
@@ -73,16 +71,16 @@ export default function SkillsPage() {
       groupedSkills.map((group) => (
        <article
         key={group.title}
-        className="border border-white/10 bg-white/4 p-4 md:p-7"
+        className="border border-border-subtle bg-surface-card p-8 rounded-[4px] shadow-lg hover:border-gold-dim transition-all duration-300"
        >
-        <h2 className="text-lg md:text-2xl font-black uppercase tracking-tight">
+        <h2 className="font-display text-[22px] md:text-[26px] font-semibold tracking-tight text-text-primary mb-5">
          {group.title}
         </h2>
-        <div className="mt-4 md:mt-6 flex flex-wrap gap-2 md:gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
          {group.skills.map((skill) => (
           <span
            key={skill}
-           className="border border-white/10 bg-black/30 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm text-white/68 hover:text-white transition"
+           className="border border-border-subtle bg-void px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider text-text-secondary hover:text-gold hover:border-gold-dim transition rounded-[2px] cursor-default"
           >
            {skill}
           </span>
@@ -91,7 +89,7 @@ export default function SkillsPage() {
        </article>
       ))
      ) : (
-      <div className="col-span-full text-center text-white/50">
+      <div className="col-span-full text-center text-text-muted py-16 bg-surface-card border border-border-subtle rounded-[4px]">
        No skills found.
       </div>
      )}

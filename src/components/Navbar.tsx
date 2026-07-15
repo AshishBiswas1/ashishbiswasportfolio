@@ -8,11 +8,11 @@ import { useScrollState } from "@/context/ScrollContext";
 
 const navItems = [
  { href: "/", label: "Home", target: "home" },
- { href: "/objective", label: "Objective" },
- { href: "/education", label: "Education" },
- { href: "/projects", label: "Projects" },
- { href: "/internships", label: "Internship" },
- { href: "/skills", label: "Skills" },
+ { href: "/objective", label: "Objective", target: "career-objective" },
+ { href: "/education", label: "Education", target: "academic-qualification" },
+ { href: "/projects", label: "Projects", target: "technical-projects" },
+ { href: "/internships", label: "Internship", target: "internship" },
+ { href: "/skills", label: "Skills", target: "technical-skills" },
  { href: "/resume", label: "Resume" },
 ];
 
@@ -62,7 +62,7 @@ function LinkedInIcon() {
 
 export default function Navbar() {
  const pathname = usePathname();
- const { user } = useScrollState();
+ const { user, activeSection } = useScrollState();
  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
  const githubUrl = user?.githubLink || "#";
@@ -75,7 +75,6 @@ export default function Navbar() {
   window.setTimeout(() => scrollToStop(target), 60);
  }, [pathname]);
 
- // Close mobile menu when navigation occurs
  const handleNavClick = () => {
   setMobileMenuOpen(false);
  };
@@ -84,56 +83,64 @@ export default function Navbar() {
   return null;
  }
 
- const handleSectionClick = (
-  event: MouseEvent<HTMLAnchorElement>,
-  target?: string,
- ) => {
-  if (pathname !== "/" || !target) return;
+  const handleSectionClick = (
+   event: MouseEvent<HTMLAnchorElement>,
+   target?: string,
+  ) => {
+   if (pathname !== "/" || target !== "home") return;
 
-  event.preventDefault();
-  window.history.replaceState(
-   null,
-   "",
-   target === "home" ? "/" : `/#${target}`,
-  );
-  scrollToStop(target);
- };
+   event.preventDefault();
+   scrollToStop("home");
+  };
 
  return (
-  <header className="fixed left-0 right-0 top-0 z-100 px-2 pt-2 sm:px-4 sm:pt-3 md:px-5 md:pt-3">
+  <header className="fixed left-0 right-0 top-0 z-100 px-2 pt-2 sm:px-4 sm:pt-3 md:px-5 md:pt-3 font-sans">
    <nav
     aria-label="Primary navigation"
-    className="relative mx-auto flex min-h-14 sm:min-h-16 max-w-375 items-center justify-between gap-2 sm:gap-3 rounded-full border border-white/15 bg-black/50 px-2 sm:px-4 md:px-5 py-2 sm:py-3 text-white shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-500 hover:border-white/30 hover:bg-black/65"
+    className="relative mx-auto flex min-h-14 sm:min-h-16 max-w-375 items-center justify-between gap-2 sm:gap-3 rounded-full border border-white/6 bg-void/50 px-2 sm:px-4 md:px-5 py-2 sm:py-3 text-text-primary shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-500 hover:border-white/12 hover:bg-void/70"
    >
     {/* Logo - Left side */}
     <Link
      href="/"
-     className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-white sm:text-sm lg:hidden"
+     className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-gold sm:text-sm lg:hidden font-display italic"
     >
      AB
     </Link>
 
     <Link
      href="/"
-     className="hidden shrink-0 text-sm font-black uppercase tracking-[0.18em] text-white lg:block"
+     className="hidden shrink-0 text-sm font-semibold uppercase tracking-[0.18em] text-white lg:block font-display"
     >
-     Ashish Biswas
+     Ashish <span className="text-gold italic font-normal">Biswas</span>
     </Link>
 
     {/* Desktop Navigation - Hidden on mobile */}
     <div className="hidden lg:flex min-w-0 items-center justify-center gap-1 flex-1 px-4">
-     {navItems.map((item) => (
-      <Link
-       key={item.href}
-       href={item.href}
-       onClick={(event) => handleSectionClick(event, item.target)}
-       className="group relative shrink-0 rounded-full px-2.5 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/68 transition duration-300 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-      >
-       <span className="relative z-10">{item.label}</span>
-       <span className="absolute inset-0 scale-90 rounded-full bg-white/0 opacity-0 transition duration-300 group-hover:scale-100 group-hover:bg-white/12 group-hover:opacity-100" />
-       <span className="absolute bottom-1 left-1/2 h-px w-0 -translate-x-1/2 bg-white/70 transition-all duration-300 group-hover:w-8" />
-      </Link>
-     ))}
+     {navItems.map((item) => {
+      const isActive =
+       pathname === item.href ||
+       (pathname === "/" && item.target === activeSection) ||
+       (pathname === "/" && activeSection === "hero" && item.target === "home");
+
+      return (
+       <Link
+        key={item.href}
+        href={item.href}
+        onClick={(event) => handleSectionClick(event, item.target)}
+        className={`group relative shrink-0 rounded-full px-3 py-2 text-[10px] font-medium font-mono uppercase tracking-[0.15em] transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 ${
+         isActive ? "text-gold" : "text-text-secondary hover:text-white"
+        }`}
+       >
+        <span className="relative z-10">{item.label}</span>
+        <span className="absolute inset-0 scale-90 rounded-full bg-gold-faint opacity-0 transition duration-300 group-hover:scale-100 group-hover:opacity-100" />
+        <span
+         className={`absolute bottom-1 left-1/2 h-px -translate-x-1/2 bg-gold transition-all duration-300 ${
+          isActive ? "w-8" : "w-0 group-hover:w-8"
+         }`}
+        />
+       </Link>
+      );
+     })}
     </div>
 
     {/* Mobile Menu Button - Visible only on mobile */}
@@ -142,16 +149,16 @@ export default function Navbar() {
      aria-label="Toggle navigation menu"
      aria-expanded={mobileMenuOpen}
      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-     className="lg:hidden flex flex-col gap-1.5 justify-center items-center h-8 w-8 rounded-lg border border-white/15 hover:border-white/35 hover:bg-white/10 transition duration-300"
+     className="lg:hidden flex flex-col gap-1.5 justify-center items-center h-8 w-8 rounded-lg border border-white/6 hover:border-gold-dim hover:bg-gold-faint transition duration-300"
     >
      <div
-      className={`h-0.5 w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`}
+      className={`h-px w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2 bg-gold" : ""}`}
      />
      <div
-      className={`h-0.5 w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`}
+      className={`h-px w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`}
      />
      <div
-      className={`h-0.5 w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`}
+      className={`h-px w-5 bg-white transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2 bg-gold" : ""}`}
      />
     </button>
 
@@ -162,7 +169,7 @@ export default function Navbar() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="GitHub profile"
-      className="grid h-8 sm:h-9 w-8 sm:w-9 place-items-center rounded-full border border-white/15 bg-white/10 text-white/75 transition duration-300 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+      className="grid h-8 sm:h-9 w-8 sm:w-9 place-items-center rounded-full border border-white/6 bg-white/5 text-text-secondary transition duration-300 hover:-translate-y-0.5 hover:border-gold-dim hover:bg-gold-faint hover:text-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
      >
       <GitHubIcon />
      </a>
@@ -171,7 +178,7 @@ export default function Navbar() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="LinkedIn profile"
-      className="grid h-8 sm:h-9 w-8 sm:w-9 place-items-center rounded-full border border-white/15 bg-white/10 text-white/75 transition duration-300 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+      className="grid h-8 sm:h-9 w-8 sm:w-9 place-items-center rounded-full border border-white/6 bg-white/5 text-text-secondary transition duration-300 hover:-translate-y-0.5 hover:border-gold-dim hover:bg-gold-faint hover:text-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
      >
       <LinkedInIcon />
      </a>
@@ -180,21 +187,30 @@ export default function Navbar() {
 
    {/* Mobile Menu - Dropdown visible on mobile when button is clicked */}
    {mobileMenuOpen && (
-    <div className="lg:hidden absolute top-full left-2 right-2 mt-2 rounded-2xl border border-white/15 bg-black/95 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)] overflow-hidden">
+    <div className="lg:hidden absolute top-full left-2 right-2 mt-2 rounded-2xl border border-white/6 bg-void/95 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.55)] overflow-hidden">
      <div className="flex flex-col p-2">
-      {navItems.map((item) => (
-       <Link
-        key={item.href}
-        href={item.href}
-        onClick={(event) => {
-         handleSectionClick(event, item.target);
-         handleNavClick();
-        }}
-        className="group relative px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-white/70 transition duration-300 hover:text-white hover:bg-white/5 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-       >
-        <span className="relative z-10">{item.label}</span>
-       </Link>
-      ))}
+      {navItems.map((item) => {
+        const isActive =
+         pathname === item.href ||
+         (pathname === "/" && item.target === activeSection) ||
+         (pathname === "/" && activeSection === "hero" && item.target === "home");
+
+       return (
+        <Link
+         key={item.href}
+         href={item.href}
+         onClick={(event) => {
+          handleSectionClick(event, item.target);
+          handleNavClick();
+         }}
+         className={`group relative px-4 py-3 text-xs font-medium font-mono uppercase tracking-[0.15em] transition duration-300 rounded-lg focus:outline-none ${
+          isActive ? "text-gold bg-gold-faint" : "text-text-secondary hover:text-white hover:bg-white/5"
+         }`}
+        >
+         <span className="relative z-10">{item.label}</span>
+        </Link>
+       );
+      })}
      </div>
     </div>
    )}

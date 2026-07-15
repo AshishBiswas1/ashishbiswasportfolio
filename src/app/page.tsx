@@ -121,18 +121,26 @@ export default function HomePage() {
      onProgress={setLoadProgress} 
     />
     
-    <div className="sticky top-0 h-screen w-full overflow-hidden perspective-[1000px]">
-     <div className="absolute bottom-8 w-full overflow-hidden whitespace-nowrap z-50 border-y border-white/10 py-3 mix-blend-difference">
-      <motion.div
-       className="inline-block text-sm tracking-[0.2em] uppercase font-bold text-white/50"
-       animate={{ x: [0, -1000] }}
-       transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-      >
-       MERN STACK - NEXT.JS - MONGODB - EXPRESS - REACT - NODE.JS - FULL-STACK
-       DEVELOPER - COER UNIVERSITY - DIGITAL EXPERIENCES - ARTIFICIAL
-       INTELLIGENCE - MERN STACK - NEXT.JS -
-      </motion.div>
-     </div>
+    <div className="sticky top-0 h-screen w-full overflow-hidden perspective-[1000px] z-10">
+      <div className="absolute bottom-8 w-full overflow-hidden border-y border-border-subtle py-3 bg-gold-faint/50 z-50 select-none">
+       <motion.div
+        className="inline-flex gap-0 whitespace-nowrap"
+        animate={{ x: [0, -1000] }}
+        transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
+       >
+        {Array(2).fill([
+         "MERN Stack", "Next.js", "Full Stack Developer", "COER University", 
+         "Artificial Intelligence", "Node.js", "React", "MongoDB", "Express", "Digital Experiences"
+        ]).flat().map((item, idx) => (
+         <span key={idx} className="inline-flex items-center">
+          <span className="font-mono text-[10px] tracking-[0.15em] uppercase text-text-muted px-7">
+           {item}
+          </span>
+          <span className="text-gold opacity-50 font-mono text-[10px] select-none">·</span>
+         </span>
+        ))}
+       </motion.div>
+      </div>
 
      <HeroSection style={heroMotion} />
      <ObjectiveSection style={objectiveMotion} />

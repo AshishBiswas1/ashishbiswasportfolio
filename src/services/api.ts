@@ -1,4 +1,4 @@
-import type { Qualification } from "@/context/ScrollContext";
+import type { Qualification, Project, Internship } from "@/context/ScrollContext";
 
 // API Base URL - adjust based on your environment
 const API_BASE_URL =
@@ -45,7 +45,6 @@ async function fetchAPI<T>(
   const json: ApiResponse<T> = await response.json();
 
   // Most of your controllers return { status, data: ... }
-  // The previous implementation returned (data.data || data) which is incorrect for that shape.
   return (json.data ?? json) as T;
  } catch (error) {
   console.error(`Failed to fetch ${endpoint}:`, error);
@@ -55,13 +54,10 @@ async function fetchAPI<T>(
 
 export async function fetchProjects() {
  try {
-  // Postman payload is: { status, data: { projects: [...] } }
-  // fetchAPI helper strips the top 'data' layer, leaving: { projects: [...] }
   const data = await fetchAPI<{ projects?: unknown[] }>(
    "/projects/?sort=-mlScore&limit=3",
   );
 
-  // A clean, safe, and direct extraction approach (no `any`)
   if (data && typeof data === "object") {
    const projectsArray = (data as { projects?: unknown }).projects;
 
@@ -77,15 +73,10 @@ export async function fetchProjects() {
  }
 }
 
-// User Profile API - GET /api/v1/user
 export async function fetchUser() {
  try {
   const data = await fetchAPI<unknown>("/user");
 
-  // Possible shapes after fetchAPI unwrap:
-  // 1) { user: [...] }
-  // 2) [...]
-  // 3) { ...fields } (fallback)
   if (Array.isArray(data)) {
    return data[0] ?? null;
   }
@@ -106,11 +97,9 @@ export async function fetchUser() {
  }
 }
 
-// Objective API
 export async function fetchObjective() {
  try {
   const data = await fetchAPI("/objective");
-  // Handle both array and single object responses
   return Array.isArray(data) ? data[0] : data;
  } catch (error) {
   console.error("Error fetching objective:", error);
@@ -118,10 +107,8 @@ export async function fetchObjective() {
  }
 }
 
-// Skills API
 export async function fetchSkills() {
  try {
-  // /skill -> { status, result, skills }
   const data = await fetchAPI<unknown>("/skill");
   if (
    data &&
@@ -139,10 +126,8 @@ export async function fetchSkills() {
  }
 }
 
-// Internships API
 export async function fetchInternships() {
  try {
-  // /internship -> { status, result, internships }
   const data = await fetchAPI<unknown>("/internship");
   if (
    data &&
@@ -160,20 +145,14 @@ export async function fetchInternships() {
  }
 }
 
-// Qualifications API
 export async function fetchQualifications() {
  try {
-  // Postman payload is: { status, result, data: { qualifications: [...] } }
-  // fetchAPI helper strips the top layers and returns: { qualifications: [...] }
   const data = await fetchAPI<{ qualifications: Qualification[] }>(
    "/qualification/",
   );
-
-  // Check if data exists and contains the qualifications array
   if (data && typeof data === "object" && "qualifications" in data) {
    return Array.isArray(data.qualifications) ? data.qualifications : [];
   }
-
   return [];
  } catch (error) {
   console.error("Error fetching qualifications:", error);
@@ -183,48 +162,20 @@ export async function fetchQualifications() {
 
 export async function fetchResume() {
  try {
-  // Backend: GET /api/v1/resume/ (controller.getActiveResume)
-  const url = `${API_BASE_URL}/resume/`;
-  const response = await fetch(url, {
-   headers: {
-    "Content-Type": "application/json",
-   },
-  });
-
-  // Handle 404 gracefully - resume may not be seeded yet
-  if (response.status === 404) {
-   console.warn(
-    "Resume not found (404) - No active resume in database. Please seed data first.",
-   );
-   return null;
+  const data = await fetchAPI<{ resume?: unknown[] | unknown }>(
+   "/resume/",
+  );
+  if (data && typeof data === "object") {
+   const resumeCandidate = "resume" in data ? (data as { resume: unknown }).resume : data;
+   return Array.isArray(resumeCandidate) ? (resumeCandidate[0] ?? null) : (resumeCandidate ?? null);
   }
-
-  if (!response.ok) {
-   throw new Error(`API Error: ${response.status} ${response.statusText}`);
-  }
-
-  const json = (await response.json()) as UnknownApiResponse;
-
-  const data = json.data;
-
-  // Most likely shapes:
-  // 1) { status:'success', data:{ resume:{...}}}
-  // 2) { status:'success', data:{ ...resumeFields...}}
-  // 3) { status:'success', data:{ resume:[{...}]}}
-  const resumeCandidate =
-   data && typeof data === "object" && "resume" in data
-    ? (data as { resume?: unknown }).resume
-    : data;
-
-  if (Array.isArray(resumeCandidate)) return resumeCandidate[0] ?? null;
-  return resumeCandidate ?? null;
+  return null;
  } catch (error) {
   console.error("Error fetching resume:", error);
   return null;
  }
 }
 
-// Contact API - POST
 export async function submitContact(contactData: {
  name: string;
  email: string;
@@ -282,5 +233,33 @@ export async function fetchAllData() {
    qualifications: [],
    resume: null,
   };
+ }
+}
+
+export async function fetchProjectById(id: string) {
+ try {
+  const data = await fetchAPI<{ project?: Project }>(`/projects/${id}`);
+  if (data && typeof data === "object") {
+   const obj = data as { project?: Project };
+   return obj.project || null;
+  }
+  return null;
+ } catch (error) {
+  console.error(`Error fetching project ${id}:`, error);
+  return null;
+ }
+}
+
+export async function fetchInternshipById(id: string) {
+ try {
+  const data = await fetchAPI<{ internship?: Internship }>(`/internship/${id}`);
+  if (data && typeof data === "object") {
+   const obj = data as { internship?: Internship };
+   return obj.internship || null;
+  }
+  return null;
+ } catch (error) {
+  console.error(`Error fetching internship ${id}:`, error);
+  return null;
  }
 }

@@ -2,53 +2,87 @@
 
 import { motion } from "framer-motion";
 import type { ComponentProps } from "react";
+import React from "react";
 import { useScrollState } from "@/context/ScrollContext";
 
 type SectionStyle = ComponentProps<typeof motion.section>["style"];
 
+function getSkillClass(name: string, proficiency?: number): string {
+ const n = name.toLowerCase();
+ 
+ if (proficiency) {
+  if (proficiency >= 90 || proficiency >= 9) return "text-[30px] sm:text-[36px] font-semibold text-text-primary";
+  if (proficiency >= 80 || proficiency >= 8) return "text-[22px] sm:text-[26px] font-semibold text-text-primary/70";
+  if (proficiency >= 60 || proficiency >= 6) return "text-[16px] sm:text-[18px] font-semibold text-text-primary/45";
+  return "text-[12px] sm:text-[14px] font-mono tracking-wider text-text-primary/30";
+ }
+
+ // Fallback map matching the template
+ if (n === "react" || n === "next.js" || n === "mongodb" || n === "nextjs") {
+  return "text-[30px] sm:text-[36px] font-semibold text-text-primary";
+ }
+ if (n === "node.js" || n === "nodejs" || n === "express.js" || n === "express" || n === "typescript") {
+  return "text-[22px] sm:text-[26px] font-semibold text-text-primary/70";
+ }
+ if (n === "supabase" || n === "tailwind css" || n === "tailwindcss") {
+  return "text-[16px] sm:text-[18px] font-semibold text-text-primary/45";
+ }
+ return "text-[12px] sm:text-[14px] font-mono tracking-wider text-text-primary/30";
+}
+
 export default function SkillsSection({ style }: { style: SectionStyle }) {
  const { skills, isLoadingSkills } = useScrollState();
 
- // Display skills if available, otherwise show placeholder
  const displaySkills = skills && skills.length > 0 ? skills : [];
 
  return (
   <motion.section
    style={style}
-   className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full h-full z-30 transform-3d"
+   className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full h-full z-30 transform-3d text-center"
   >
-   <div className="w-full text-center bg-black/40 backdrop-blur-md p-6 sm:p-8 md:p-12 rounded-xl sm:rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl">
-    <div className="text-xs font-mono tracking-widest text-white/40 mb-4 sm:mb-6">
-     [ CAPABILITIES ]
-    </div>
-    <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter mb-6 sm:mb-8 md:mb-12">
-     Technical Arsenal
-    </h2>
-    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 max-w-4xl mx-auto">
-     {isLoadingSkills ? (
-      <>
-       <div className="h-10 w-24 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-28 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-20 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-32 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-24 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-22 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-26 bg-white/10 rounded-full animate-pulse" />
-       <div className="h-10 w-30 bg-white/10 rounded-full animate-pulse" />
-      </>
-     ) : displaySkills.length > 0 ? (
-      displaySkills.map((skill) => (
-       <div
-        key={skill._id}
-        className="px-3 sm:px-5 md:px-6 py-2 sm:py-3 md:py-4 border border-white/20 rounded-full text-xs sm:text-sm md:text-base tracking-wider uppercase backdrop-blur-sm bg-black/40 hover:bg-white hover:text-black hover:scale-105 transition-all duration-300 cursor-default shadow-lg"
+   {/* Eyebrow Label */}
+   <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] uppercase text-gold justify-center mb-4">
+    <span className="w-5 h-px bg-gold inline-block" />
+    Capabilities
+   </div>
+
+   {/* Header */}
+   <h2 className="font-display text-[38px] sm:text-[48px] md:text-[60px] lg:text-[72px] font-light leading-none tracking-[-0.025em] text-text-primary">
+    <strong>Technical</strong> <em className="font-display italic text-gold font-normal not-italic">Arsenal</em>
+   </h2>
+
+   {/* Word Cloud */}
+   <div className="flex flex-wrap justify-center items-center gap-y-4 max-w-[820px] mx-auto mt-12 sm:mt-16 px-4">
+    {isLoadingSkills ? (
+     <div className="animate-pulse flex flex-wrap justify-center gap-6 w-full">
+      <div className="h-8 w-24 bg-white/10 rounded-[2px]" />
+      <div className="h-6 w-20 bg-white/10 rounded-[2px]" />
+      <div className="h-10 w-28 bg-white/10 rounded-[2px]" />
+      <div className="h-5 w-16 bg-white/10 rounded-[2px]" />
+     </div>
+    ) : displaySkills.length > 0 ? (
+     displaySkills.map((skill, idx) => (
+      <React.Fragment key={skill._id}>
+       <span
+        className={`font-display transition-colors duration-300 hover:text-gold cursor-default ${getSkillClass(
+         skill.name,
+         skill.proficiency
+        )}`}
        >
         {skill.name}
-       </div>
-      ))
-     ) : (
-      <div className="text-white/50 text-sm">No skills found</div>
-     )}
-    </div>
+       </span>
+       {idx < displaySkills.length - 1 && (
+        <span className="font-mono text-xs text-gold-dim select-none mx-3 sm:mx-4">
+         ·
+        </span>
+       )}
+      </React.Fragment>
+     ))
+    ) : (
+     <span className="text-text-muted font-mono text-xs uppercase tracking-widest">
+      No capabilities registered
+     </span>
+    )}
    </div>
   </motion.section>
  );

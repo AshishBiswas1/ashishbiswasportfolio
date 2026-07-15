@@ -12,6 +12,7 @@ export interface Project {
  deployedlink?: string;
  duration?: Array<{ month: string; year: number }>;
  image?: string[];
+ video?: string;
  mlScore?: number;
  mlConfidence?: number;
  mlLastAnalyzed?: string;
@@ -46,6 +47,8 @@ export interface Internship {
  impactScore?: number;
  description?: string[];
  certificate?: string;
+ offerLetter?: string;
+ recommendationLetter?: string;
  duration?: {
   startDate: string;
   endDate: string;
