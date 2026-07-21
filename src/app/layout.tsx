@@ -1,4 +1,5 @@
 import SuppressWarnings from "@/components/SuppressWarnings";
+import CustomCursor from "@/components/CustomCursor";
 import "@/utils/suppressWarnings";
 import "./globals.css";
 import { ScrollProvider } from "@/context/ScrollContext";
@@ -56,6 +57,7 @@ export default function RootLayout({
    </head>
    <body>
     <SuppressWarnings />
+    <CustomCursor />
     <ScrollProvider>
      <Navbar />
      {children}

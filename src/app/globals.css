@@ -145,3 +145,81 @@ textarea {
   scrollbar-width: none;
  }
 }
+
+/* ─── PREMIUM CUSTOM CURSOR SYSTEM ─── */
+
+/* Hide the real cursor everywhere on the page */
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+/* The sharp center dot — precise click indicator */
+#cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease, width 0.15s ease, height 0.15s ease, background 0.15s ease;
+  opacity: 0; /* hidden until mouse enters */
+}
+
+/* The trailing ring */
+#cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(200, 169, 110, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+  opacity: 0; /* hidden until mouse enters */
+}
+
+/* ── Hover state on clickable elements ──
+   The dot expands and the ring tightens to signal interactivity */
+body.cursor-hover #cursor-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+}
+
+body.cursor-hover #cursor-ring {
+  width: 52px;
+  height: 52px;
+  border-color: rgba(200, 169, 110, 0.25);
+}
+
+/* ── Click state — both contract sharply ── */
+body.cursor-clicking #cursor-dot {
+  width: 4px;
+  height: 4px;
+}
+
+body.cursor-clicking #cursor-ring {
+  width: 24px;
+  height: 24px;
+  border-color: rgba(200, 169, 110, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cursor-ring {
+    transition: none;
+    /* Snap the ring instantly instead of trailing */
+  }
+  body.cursor-hover #cursor-dot,
+  body.cursor-hover #cursor-ring,
+  body.cursor-clicking #cursor-dot,
+  body.cursor-clicking #cursor-ring {
+    transition: none;
+  }
+}

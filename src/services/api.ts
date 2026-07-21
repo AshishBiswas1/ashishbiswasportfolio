@@ -31,6 +31,7 @@ async function fetchAPI<T>(
 
  try {
   const response = await fetch(url, {
+   cache: "no-cache",
    ...options,
    headers: {
     "Content-Type": "application/json",

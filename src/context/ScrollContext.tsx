@@ -84,15 +84,25 @@ export interface UserProfile {
 
 export interface Resume {
  _id: string;
- name?: string;
- email?: string;
- designation?: string[];
- photo?: string;
- address?: string;
- number?: number;
- githubLink?: string;
- linkedinLink?: string;
- role?: string;
+ fullName?: string;
+ professionalTitle?: string[];
+ contact?: {
+  email?: string;
+  phone?: string;
+  location?: string;
+ };
+ socialLinks?: {
+  github?: string;
+  linkedin?: string;
+ };
+ resumePdf?: string;
+ defaultSummary?: string;
+ targetedSummaries?: Array<{
+  audience: "Frontend" | "Backend" | "FullStack" | "DataScience" | "DevOps" | "General";
+  text: string;
+  _id: string;
+ }>;
+ isActive?: boolean;
 }
 
 interface ScrollContextType {
