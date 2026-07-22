@@ -25,7 +25,7 @@ export default function AcademicsSection({ style }: { style: SectionStyle }) {
  return (
   <motion.section
    style={style}
-   className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full h-full z-20 transform-3d"
+   className="lg:absolute lg:inset-0 lg:h-full relative min-h-screen py-20 lg:py-0 flex flex-col justify-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full z-20 transform-3d"
   >
    {/* Section Header */}
    <div className="flex items-baseline justify-between mb-8 sm:mb-12 text-left">

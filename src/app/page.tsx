@@ -49,107 +49,126 @@ export default function HomePage() {
  // Load data from backend on mount
  usePortfolioData();
 
- // Loading State linked to background images preloading
- const [loadProgress, setLoadProgress] = useState(0);
- const [isPageLoading, setIsPageLoading] = useState(true);
+  // Loading State linked to background images preloading
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
- useEffect(() => {
-  if (loadProgress >= 100) {
-   const timer = setTimeout(() => {
-    setIsPageLoading(false);
-   }, 300); // Gentle offset to see progress hit 100% before transition
-   return () => clearTimeout(timer);
-  }
- }, [loadProgress]);
+  useEffect(() => {
+   const checkScreen = () => {
+    setIsLargeScreen(window.innerWidth >= 1024);
+   };
+   checkScreen();
+   window.addEventListener("resize", checkScreen);
+   return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
- const heroMotion = useSectionMotion(
-  scrollYProgress,
-  [0, 0.08, 0.14],
-  [1, 1, 0],
- );
- const objectiveMotion = useSectionMotion(
-  scrollYProgress,
-  [0.15, 0.21, 0.28, 0.34],
-  [0, 1, 1, 0],
- );
- const academicsMotion = useSectionMotion(
-  scrollYProgress,
-  [0.35, 0.41, 0.45, 0.51],
-  [0, 1, 1, 0],
- );
- const internshipsMotion = useSectionMotion(
-  scrollYProgress,
-  [0.52, 0.58, 0.62, 0.68],
-  [0, 1, 1, 0],
- );
- const projectsMotion = useSectionMotion(
-  scrollYProgress,
-  [0.69, 0.75, 0.79, 0.85],
-  [0, 1, 1, 0],
- );
- const skillsMotion = useSectionMotion(
-  scrollYProgress,
-  [0.86, 0.92, 1],
-  [0, 1, 1],
- );
+  useEffect(() => {
+   if (loadProgress >= 100) {
+    const timer = setTimeout(() => {
+     setIsPageLoading(false);
+    }, 300); // Gentle offset to see progress hit 100% before transition
+    return () => clearTimeout(timer);
+   }
+  }, [loadProgress]);
 
- useEffect(() => {
-  return scrollYProgress.on("change", (latest) => {
-   if (latest < 0.16) setActiveSection("hero");
-   else if (latest < 0.33) setActiveSection("objective");
-   else if (latest < 0.5) setActiveSection("academics");
-   else if (latest < 0.66) setActiveSection("internships");
-   else if (latest < 0.83) setActiveSection("projects");
-   else setActiveSection("skills");
-  });
- }, [scrollYProgress, setActiveSection]);
+  const heroMotion = useSectionMotion(
+   scrollYProgress,
+   [0, 0.08, 0.14],
+   [1, 1, 0],
+  );
+  const objectiveMotion = useSectionMotion(
+   scrollYProgress,
+   [0.15, 0.21, 0.28, 0.34],
+   [0, 1, 1, 0],
+  );
+  const academicsMotion = useSectionMotion(
+   scrollYProgress,
+   [0.35, 0.41, 0.45, 0.51],
+   [0, 1, 1, 0],
+  );
+  const internshipsMotion = useSectionMotion(
+   scrollYProgress,
+   [0.52, 0.58, 0.62, 0.68],
+   [0, 1, 1, 0],
+  );
+  const projectsMotion = useSectionMotion(
+   scrollYProgress,
+   [0.69, 0.75, 0.79, 0.85],
+   [0, 1, 1, 0],
+  );
+  const skillsMotion = useSectionMotion(
+   scrollYProgress,
+   [0.86, 0.92, 1],
+   [0, 1, 1],
+  );
 
- return (
-  <>
-   <AnimatePresence>
-    {isPageLoading && (
-     <PremiumLoader progress={loadProgress} />
-    )}
-   </AnimatePresence>
+  const heroStyle = isLargeScreen ? heroMotion : {};
+  const objectiveStyle = isLargeScreen ? objectiveMotion : {};
+  const academicsStyle = isLargeScreen ? academicsMotion : {};
+  const internshipsStyle = isLargeScreen ? internshipsMotion : {};
+  const projectsStyle = isLargeScreen ? projectsMotion : {};
+  const skillsStyle = isLargeScreen ? skillsMotion : {};
 
-   <div
-    ref={containerRef}
-    className="relative h-[600vh] bg-transparent text-white font-sans"
-   >
-    <ScrollVideoBackground 
-     scrollYProgress={scrollYProgress} 
-     onProgress={setLoadProgress} 
-    />
-    
-    <div className="sticky top-0 h-screen w-full overflow-hidden perspective-[1000px] z-10">
-      <div className="absolute bottom-8 w-full overflow-hidden border-y border-border-subtle py-3 bg-gold-faint/50 z-50 select-none">
-       <motion.div
-        className="inline-flex gap-0 whitespace-nowrap"
-        animate={{ x: [0, -1000] }}
-        transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
-       >
-        {Array(2).fill([
-         "MERN Stack", "Next.js", "Full Stack Developer", "COER University", 
-         "Artificial Intelligence", "Node.js", "React", "MongoDB", "Express", "Digital Experiences"
-        ]).flat().map((item, idx) => (
-         <span key={idx} className="inline-flex items-center">
-          <span className="font-mono text-[10px] tracking-[0.15em] uppercase text-text-muted px-7">
-           {item}
+  useEffect(() => {
+   if (!isLargeScreen) return;
+   return scrollYProgress.on("change", (latest) => {
+    if (latest < 0.16) setActiveSection("hero");
+    else if (latest < 0.33) setActiveSection("objective");
+    else if (latest < 0.5) setActiveSection("academics");
+    else if (latest < 0.66) setActiveSection("internships");
+    else if (latest < 0.83) setActiveSection("projects");
+    else setActiveSection("skills");
+   });
+  }, [scrollYProgress, setActiveSection, isLargeScreen]);
+
+  return (
+   <>
+    <AnimatePresence>
+     {isPageLoading && (
+      <PremiumLoader progress={loadProgress} />
+     )}
+    </AnimatePresence>
+
+    <div
+     ref={containerRef}
+     className="relative lg:h-[600vh] h-auto bg-transparent text-white font-sans"
+    >
+     <ScrollVideoBackground 
+      scrollYProgress={scrollYProgress} 
+      onProgress={setLoadProgress} 
+     />
+     
+     <div className="lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden relative h-auto overflow-visible perspective-[1000px] z-10">
+      <HeroSection style={heroStyle} />
+
+       <div className="lg:absolute lg:bottom-8 relative w-full overflow-hidden border-y border-border-subtle py-3 bg-gold-faint/50 z-50 select-none mt-8 lg:mt-0">
+        <motion.div
+         className="inline-flex gap-0 whitespace-nowrap"
+         animate={{ x: [0, -1000] }}
+         transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
+        >
+         {Array(2).fill([
+          "MERN Stack", "Next.js", "Full Stack Developer", "COER University", 
+          "Artificial Intelligence", "Node.js", "React", "MongoDB", "Express", "Digital Experiences"
+         ]).flat().map((item, idx) => (
+          <span key={idx} className="inline-flex items-center">
+           <span className="font-mono text-[10px] tracking-[0.15em] uppercase text-text-muted px-7">
+            {item}
+           </span>
+           <span className="text-gold opacity-50 font-mono text-[10px] select-none">·</span>
           </span>
-          <span className="text-gold opacity-50 font-mono text-[10px] select-none">·</span>
-         </span>
-        ))}
-       </motion.div>
-      </div>
+         ))}
+        </motion.div>
+       </div>
 
-     <HeroSection style={heroMotion} />
-     <ObjectiveSection style={objectiveMotion} />
-     <AcademicsSection style={academicsMotion} />
-     <InternshipsSection style={internshipsMotion} />
-     <ProjectsSection style={projectsMotion} projects={projects} />
-     <SkillsSection style={skillsMotion} />
+      <ObjectiveSection style={objectiveStyle} />
+      <AcademicsSection style={academicsStyle} />
+      <InternshipsSection style={internshipsStyle} />
+      <ProjectsSection style={projectsStyle} projects={projects} />
+      <SkillsSection style={skillsStyle} />
+     </div>
     </div>
-   </div>
-  </>
- );
+   </>
+  );
 }

@@ -28,7 +28,7 @@ export default function InternshipsSection({ style }: { style: SectionStyle }) {
  return (
   <motion.section
    style={style}
-   className="absolute inset-0 flex items-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full h-full z-20 transform-3d"
+   className="lg:absolute lg:inset-0 lg:h-full relative min-h-screen py-20 lg:py-0 flex items-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full z-20 transform-3d"
   >
    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center w-full text-left">
     {/* Left Column: Eyebrow, Title, Description */}

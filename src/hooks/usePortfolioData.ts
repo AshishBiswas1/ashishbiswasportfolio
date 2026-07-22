@@ -158,19 +158,32 @@ export function usePortfolioData() {
 
   // Route-Specific / Lazy-Load logic
   if (isHome) {
-   // Homepage: lazy load by activeSection
-   if (activeSection === "hero") {
+   const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+   
+   if (isMobile) {
+    // On mobile, native vertical scrolling is used and scroll-jacking is disabled, 
+    // so activeSection doesn't update based on 600vh progress. Eagerly load all sections.
     loadUserData();
-   } else if (activeSection === "objective") {
     loadObjectiveData();
-   } else if (activeSection === "academics") {
     loadQualificationsData();
-   } else if (activeSection === "internships") {
     loadInternshipsData();
-   } else if (activeSection === "projects") {
     loadProjectsData();
-   } else if (activeSection === "skills") {
     loadSkillsData();
+   } else {
+    // Homepage (Desktop): lazy load sequentially by activeSection
+    if (activeSection === "hero") {
+     loadUserData();
+    } else if (activeSection === "objective") {
+     loadObjectiveData();
+    } else if (activeSection === "academics") {
+     loadQualificationsData();
+    } else if (activeSection === "internships") {
+     loadInternshipsData();
+    } else if (activeSection === "projects") {
+     loadProjectsData();
+    } else if (activeSection === "skills") {
+     loadSkillsData();
+    }
    }
   } else {
    // Standalone Subpages: immediately fetch what is required

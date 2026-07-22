@@ -111,14 +111,18 @@
 
 /* ─── TWO-COLUMN LAYOUT ─── */
 .resumeColumns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 40px;
   align-items: start;
+  justify-content: center;
+  width: 100%;
 }
 
 /* ─── LEFT: TEXT RESUME ─── */
 .resumeText {
+  flex: 1 1 500px;
+  max-width: 650px;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -453,6 +457,8 @@
 
 /* ─── RIGHT: PDF VIEWER ─── */
 .resumeViewer {
+  flex: 1 1 500px;
+  max-width: 650px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -604,7 +610,6 @@
 @media (max-width: 960px) {
   .page { padding: 90px 32px 80px; }
   .pageHeader { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .resumeColumns { grid-template-columns: 1fr; }
   .resumeText { position: static; }
   .resumeViewer { position: static; order: -1; }
 }

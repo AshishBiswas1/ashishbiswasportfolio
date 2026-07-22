@@ -212,7 +212,7 @@ export default function ResumePage() {
 
             <div className={styles.viewerFrame}>
               {pdfUrl ? (
-                <iframe src={pdfUrl} title={`${name} Resume`} />
+                <iframe src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} title={`${name} Resume`} />
               ) : (
                 <div className={styles.viewerPlaceholder}>
                   <div className={styles.viewerPlaceholderIcon}>

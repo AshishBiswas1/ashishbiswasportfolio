@@ -7,6 +7,7 @@ import type { Project } from "@/context/ScrollContext";
 
 function ChunkedVideoPlayer({ src }: { src: string }) {
  const videoRef = useRef<HTMLVideoElement>(null);
+ const containerRef = useRef<HTMLDivElement>(null);
  const [logs, setLogs] = useState<string[]>([]);
  const [isFetching, setIsFetching] = useState(false);
  const [videoBlobUrl, setVideoBlobUrl] = useState<string | null>(null);
@@ -14,6 +15,16 @@ function ChunkedVideoPlayer({ src }: { src: string }) {
  const [totalSize, setTotalSize] = useState<number | null>(null);
  const [useNativePlayer, setUseNativePlayer] = useState(false);
  const chunksRef = useRef<Blob[]>([]);
+
+ // Custom controls state
+ const [isPlaying, setIsPlaying] = useState(false);
+ const [progress, setProgress] = useState(0);
+ const [currentTime, setCurrentTime] = useState(0);
+ const [duration, setDuration] = useState(0);
+ const [isMuted, setIsMuted] = useState(false);
+ const [isFullscreen, setIsFullscreen] = useState(false);
+ const [showControls, setShowControls] = useState(true);
+ const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
  const CHUNK_SIZE = 3 * 1024 * 1024; // 3MB chunks
 
@@ -38,7 +49,6 @@ function ChunkedVideoPlayer({ src }: { src: string }) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
    }
 
-   // Extract total size from content range
    const contentRange = response.headers.get("Content-Range");
    if (contentRange) {
     const totalPart = contentRange.split("/")[1];
@@ -55,18 +65,16 @@ function ChunkedVideoPlayer({ src }: { src: string }) {
    const combinedBlob = new Blob(chunksRef.current, { type: "video/mp4" });
    const newUrl = URL.createObjectURL(combinedBlob);
    
-   // Update player source while preserving playback cursor
    if (videoRef.current) {
     const player = videoRef.current;
     const current = player.currentTime;
-    const isPlaying = !player.paused;
+    const wasPlaying = !player.paused;
 
     setVideoBlobUrl(newUrl);
 
-    // Restore position after reload
     const onCanPlay = () => {
      player.currentTime = current;
-     if (isPlaying) {
+     if (wasPlaying) {
       player.play().catch(() => {});
      }
      player.removeEventListener("canplay", onCanPlay);
@@ -104,17 +112,17 @@ function ChunkedVideoPlayer({ src }: { src: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
  }, []);
 
- // Check buffer status and fetch next chunk when playback approaches the loaded end
  const handleTimeUpdate = () => {
-  if (useNativePlayer || !videoRef.current) return;
+  if (!videoRef.current) return;
   const player = videoRef.current;
 
+  setCurrentTime(player.currentTime);
+  setProgress((player.currentTime / (player.duration || 1)) * 100);
+
+  if (useNativePlayer) return;
   if (!player.duration || isFetching) return;
 
-  // Calculate percentage of loaded duration played
   const percentPlayed = player.currentTime / player.duration;
-
-  // If user has played past 70% of the currently loaded chunk, and we have more bytes to load, fetch next!
   if (percentPlayed > 0.7) {
    if (totalSize && currentByteOffset < totalSize) {
     const nextEnd = Math.min(currentByteOffset + CHUNK_SIZE, totalSize);
@@ -123,23 +131,172 @@ function ChunkedVideoPlayer({ src }: { src: string }) {
   }
  };
 
+ const formatTime = (time: number) => {
+  if (isNaN(time)) return "0:00";
+  const m = Math.floor(time / 60);
+  const s = Math.floor(time % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+ };
+
+ const togglePlay = () => {
+  if (videoRef.current) {
+   if (isPlaying) {
+    videoRef.current.pause();
+   } else {
+    videoRef.current.play();
+   }
+  }
+ };
+
+ const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.stopPropagation();
+  if (videoRef.current) {
+   const rect = e.currentTarget.getBoundingClientRect();
+   const pos = (e.clientX - rect.left) / rect.width;
+   videoRef.current.currentTime = pos * (videoRef.current.duration || 1);
+  }
+ };
+
+ const toggleMute = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  if (videoRef.current) {
+   videoRef.current.muted = !isMuted;
+   setIsMuted(!isMuted);
+  }
+ };
+
+ const toggleFullscreen = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+  if (!containerRef.current) return;
+  if (!document.fullscreenElement) {
+   await containerRef.current.requestFullscreen().catch(() => {});
+  } else {
+   await document.exitFullscreen().catch(() => {});
+  }
+ };
+
+ useEffect(() => {
+  const handleFullscreenChange = () => {
+   setIsFullscreen(!!document.fullscreenElement);
+  };
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+ }, []);
+
+ const handleMouseMove = () => {
+  setShowControls(true);
+  if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+  controlsTimeoutRef.current = setTimeout(() => {
+   if (isPlaying) setShowControls(false);
+  }, 2500);
+ };
+
+ const handleMouseLeave = () => {
+  if (isPlaying) setShowControls(false);
+ };
+
  return (
   <div className="w-full space-y-4">
-   <div className="w-full aspect-video bg-void border border-border-subtle rounded-sm relative overflow-hidden flex flex-col justify-between p-1">
+   <div 
+    ref={containerRef}
+    className={`w-full bg-black relative overflow-hidden group flex items-center justify-center ${showControls || !isPlaying ? "cursor-default" : "cursor-none"} ${isFullscreen ? "fixed inset-0 z-[9999] rounded-none border-none" : "aspect-video border border-border-subtle rounded-sm"}`}
+    onMouseMove={handleMouseMove}
+    onMouseLeave={handleMouseLeave}
+    onClick={togglePlay}
+   >
     {videoBlobUrl || useNativePlayer ? (
-     <video
-      ref={videoRef}
-      src={useNativePlayer ? src : videoBlobUrl!}
-      className="w-full h-full object-contain"
-      controls
-      preload={useNativePlayer ? "metadata" : "none"}
-      onTimeUpdate={handleTimeUpdate}
-      onError={() => {
-       addLog("[Error] Browser failed to play video stream natively.");
-      }}
-     />
+     <>
+      <video
+       ref={videoRef}
+       src={useNativePlayer ? src : videoBlobUrl!}
+       className="w-full h-full object-contain"
+       preload={useNativePlayer ? "metadata" : "none"}
+       onTimeUpdate={handleTimeUpdate}
+       onLoadedMetadata={() => {
+        setDuration(videoRef.current?.duration || 0);
+        if (videoRef.current) videoRef.current.muted = isMuted;
+       }}
+       onPlay={() => setIsPlaying(true)}
+       onPause={() => setIsPlaying(false)}
+       onEnded={() => setIsPlaying(false)}
+       onError={() => {
+        addLog("[Error] Browser failed to play video stream natively.");
+       }}
+      />
+      
+      {/* Play/Pause Center Button Overlay */}
+      <div 
+       className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${!isPlaying || (showControls && !isPlaying) ? "opacity-100" : "opacity-0"}`}
+      >
+       {!isPlaying && (
+        <div className="bg-void/50 backdrop-blur-sm border border-border-subtle rounded-full p-5 text-gold shadow-2xl transition-transform transform scale-100 group-hover:scale-110">
+         <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+         </svg>
+        </div>
+       )}
+      </div>
+
+      {/* Controls Bar */}
+      <div 
+       className={`absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/90 via-black/50 to-transparent p-4 pt-16 transition-opacity duration-300 flex flex-col gap-3 ${showControls || !isPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+       onClick={(e) => e.stopPropagation()}
+      >
+       {/* Progress Bar */}
+       <div 
+        className="h-1.5 w-full bg-white/20 rounded-full cursor-pointer overflow-hidden relative group/progress flex items-center transition-all hover:h-2"
+        onClick={handleProgressClick}
+       >
+        <div 
+         className="h-full bg-gold absolute top-0 left-0 pointer-events-none transition-all duration-75"
+         style={{ width: `${progress}%` }}
+        />
+        {totalSize && !useNativePlayer && (
+         <div 
+          className="h-full bg-white/30 absolute top-0 left-0 pointer-events-none -z-10 transition-all duration-300"
+          style={{ width: `${(currentByteOffset / totalSize) * 100}%` }}
+         />
+        )}
+       </div>
+
+       {/* Control Buttons */}
+       <div className="flex items-center justify-between text-white/90">
+        <div className="flex items-center gap-5">
+         <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="hover:text-gold transition-colors p-1" aria-label={isPlaying ? "Pause" : "Play"}>
+          {isPlaying ? (
+           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          ) : (
+           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          )}
+         </button>
+         <div className="flex items-center gap-1.5 font-mono text-[11px] tracking-wider">
+          <span className="w-10 text-right">{formatTime(currentTime)}</span>
+          <span className="text-white/40">/</span>
+          <span className="text-white/60 w-10">{formatTime(duration)}</span>
+         </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+         <button onClick={toggleMute} className="hover:text-gold transition-colors p-1" aria-label={isMuted ? "Unmute" : "Mute"}>
+          {isMuted ? (
+           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+          ) : (
+           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.898a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+          )}
+         </button>
+         <button onClick={toggleFullscreen} className="hover:text-gold transition-colors p-1" aria-label={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
+          {isFullscreen ? (
+           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+          ) : (
+           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          )}
+         </button>
+        </div>
+       </div>
+      </div>
+     </>
     ) : (
-     <div className="flex-1 flex flex-col items-center justify-center text-text-muted">
+     <div className="flex-1 flex flex-col items-center justify-center text-text-muted h-full w-full">
       <svg className="animate-spin h-8 w-8 text-gold mb-3" viewBox="0 0 24 24">
        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
@@ -392,7 +549,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           href={gitUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full text-center border border-gold bg-gold px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-void transition hover:bg-transparent hover:text-gold rounded-xs font-mono cursor-pointer"
+          className="relative z-10 flex w-full items-center justify-center text-center border border-gold bg-gold px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] text-void transition-all duration-300 hover:bg-transparent hover:text-gold rounded-xs font-mono cursor-pointer"
          >
           GitHub Repository
          </a>
@@ -403,7 +560,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           href={liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full text-center border border-border-mid bg-gold-faint px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-gold transition hover:bg-gold hover:text-void rounded-xs font-mono cursor-pointer"
+          className="relative z-10 flex w-full items-center justify-center text-center border border-border-mid bg-gold-faint px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] text-gold transition-all duration-300 hover:bg-gold hover:text-void rounded-xs font-mono cursor-pointer"
          >
           Live Deployment
          </a>

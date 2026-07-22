@@ -38,7 +38,7 @@ export default function SkillsSection({ style }: { style: SectionStyle }) {
  return (
   <motion.section
    style={style}
-   className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full h-full z-30 transform-3d text-center"
+   className="lg:absolute lg:inset-0 lg:h-full relative min-h-screen py-20 lg:py-0 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 max-w-6xl mx-auto w-full z-30 transform-3d text-center"
   >
    {/* Eyebrow Label */}
    <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] uppercase text-gold justify-center mb-4">
