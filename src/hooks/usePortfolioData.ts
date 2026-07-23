@@ -17,7 +17,7 @@ import {
  * - On subpages, it immediately loads the data required for that subpage.
  * - Uses a ref to ensure each section's data is only requested once.
  */
-export function usePortfolioData() {
+export function usePortfolioData(onAllApiLoaded?: () => void) {
  const pathname = usePathname();
  const {
   activeSection,
@@ -156,35 +156,23 @@ export function usePortfolioData() {
    }
   };
 
-  // Route-Specific / Lazy-Load logic
+  // Route-Specific / Pre-fetch logic
   if (isHome) {
-   const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
-   
-   if (isMobile) {
-    // On mobile, native vertical scrolling is used and scroll-jacking is disabled, 
-    // so activeSection doesn't update based on 600vh progress. Eagerly load all sections.
-    loadUserData();
-    loadObjectiveData();
-    loadQualificationsData();
-    loadInternshipsData();
-    loadProjectsData();
-    loadSkillsData();
-   } else {
-    // Homepage (Desktop): lazy load sequentially by activeSection
-    if (activeSection === "hero") {
-     loadUserData();
-    } else if (activeSection === "objective") {
-     loadObjectiveData();
-    } else if (activeSection === "academics") {
-     loadQualificationsData();
-    } else if (activeSection === "internships") {
-     loadInternshipsData();
-    } else if (activeSection === "projects") {
-     loadProjectsData();
-    } else if (activeSection === "skills") {
-     loadSkillsData();
+   const loadAllHomeData = async () => {
+    await Promise.allSettled([
+     loadUserData(),
+     loadObjectiveData(),
+     loadQualificationsData(),
+     loadInternshipsData(),
+     loadProjectsData(),
+     loadSkillsData(),
+     loadResumeData(),
+    ]);
+    if (onAllApiLoaded) {
+     onAllApiLoaded();
     }
-   }
+   };
+   loadAllHomeData();
   } else {
    // Standalone Subpages: immediately fetch what is required
    if (pathname === "/about") {
@@ -214,6 +202,7 @@ export function usePortfolioData() {
  }, [
   pathname,
   activeSection,
+  onAllApiLoaded,
   setUser,
   setObjective,
   setQualifications,

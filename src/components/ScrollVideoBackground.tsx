@@ -19,13 +19,6 @@ const globalListeners = new Set<(percent: number) => void>();
 
 const startGlobalPreload = async () => {
  if (globalIsPreloading || globalIsPreloaded) return;
- 
- const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
- 
- if (isMobile) {
-  // Free the loader instantly on mobile so API content can display
-  globalListeners.forEach((listener) => listener(100));
- }
 
  globalIsPreloading = true;
 
@@ -52,15 +45,8 @@ const startGlobalPreload = async () => {
    globalIsPreloading = false;
   }
   
-  if (!isMobile) {
-   globalPreloadProgress = Math.round((loadedCount / targetTotal) * 100);
-   globalListeners.forEach((listener) => listener(globalPreloadProgress));
-  } else {
-   if (loadedCount === targetTotal) {
-    globalPreloadProgress = 100;
-    globalListeners.forEach((listener) => listener(100));
-   }
-  }
+  globalPreloadProgress = Math.round((loadedCount / targetTotal) * 100);
+  globalListeners.forEach((listener) => listener(globalPreloadProgress));
  };
 
  const loadFrames = () => {
@@ -73,12 +59,7 @@ const startGlobalPreload = async () => {
   }
  };
 
- if (isMobile) {
-  // Delay fetching by 1500ms to allow API calls to complete and render text first
-  setTimeout(loadFrames, 1500);
- } else {
-  loadFrames();
- }
+ loadFrames();
 };
 
 export default function ScrollVideoBackground({
