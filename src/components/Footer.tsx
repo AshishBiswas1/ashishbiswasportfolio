@@ -53,15 +53,15 @@ function FooterColumn({
 }) {
  return (
   <div>
-   <h3 className="mb-5 font-mono text-[10px] tracking-[0.18em] uppercase text-gold">
+   <h3 className="mb-4 sm:mb-5 font-mono text-[10px] tracking-[0.18em] uppercase text-gold">
     {title}
    </h3>
-   <nav className="flex flex-col gap-2.5" aria-label={`${title} footer links`}>
+   <nav className="flex flex-col gap-2 sm:gap-2.5" aria-label={`${title} footer links`}>
     {links.map((link) => (
      <Link
       key={link.href}
       href={link.href}
-      className="text-[13px] text-text-secondary hover:text-text-primary font-light transition-colors duration-200"
+      className="text-[11px] sm:text-[13px] text-text-secondary hover:text-text-primary font-light transition-colors duration-200"
      >
       {link.label}
      </Link>
@@ -85,23 +85,23 @@ export default function Footer() {
 
  return (
   <footer className="relative z-40 border-t border-border-subtle bg-void text-text-primary">
-   <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:px-8">
-    <div className="grid gap-10 md:gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.4fr_0.7fr_0.7fr_0.9fr]">
+   <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16 px-4 sm:px-6 md:px-8">
+    <div className="flex flex-col gap-10 md:gap-12 md:flex-row md:justify-between">
      {/* Brand info */}
-     <div className="flex flex-col gap-4">
+     <div className="flex flex-col gap-4 md:max-w-[260px]">
       <Link
        href="/"
-       className="font-display text-[28px] font-semibold tracking-[-0.01em] text-text-primary"
+       className="font-display text-[26px] md:text-[28px] font-semibold tracking-[-0.01em] text-text-primary"
       >
        Ashish Biswas
       </Link>
-      <p className="text-[13px] text-text-muted leading-relaxed font-light max-w-[220px]">
+      <p className="text-[12px] md:text-[13px] text-text-muted leading-relaxed font-light max-w-[260px]">
        Full-stack developer focused on clean interfaces, reliable systems, and
        thoughtful web experiences.
       </p>
       
       {/* Social Links */}
-      <div className="mt-4 flex items-center gap-2.5">
+      <div className="mt-2 flex items-center gap-2.5">
        <a
         href={githubUrl}
         target="_blank"
@@ -123,23 +123,26 @@ export default function Footer() {
       </div>
      </div>
 
-     {/* Explore Links */}
-     <FooterColumn title="Explore" links={exploreLinks} />
-     
-     {/* Profile Links */}
-     <FooterColumn title="Profile" links={profileLinks} />
+     {/* 3 Horizontal Columns: Explore, Profile, Focus across ALL screen sizes */}
+     <div className="grid grid-cols-3 gap-3 sm:gap-8 md:gap-12 flex-1 md:max-w-2xl">
+      {/* Explore Links */}
+      <FooterColumn title="Explore" links={exploreLinks} />
+      
+      {/* Profile Links */}
+      <FooterColumn title="Profile" links={profileLinks} />
 
-     {/* Focus Column */}
-     <div>
-      <h3 className="mb-5 font-mono text-[10px] tracking-[0.18em] uppercase text-gold">
-       Focus
-      </h3>
-      <nav className="flex flex-col gap-2.5" aria-label="Focus details">
-       <span className="text-[13px] text-text-secondary font-light">Next.js interfaces</span>
-       <span className="text-[13px] text-text-secondary font-light">MERN applications</span>
-       <span className="text-[13px] text-text-secondary font-light">Animated portfolios</span>
-       <span className="text-[13px] text-text-secondary font-light">API-backed showcases</span>
-      </nav>
+      {/* Focus Column */}
+      <div>
+       <h3 className="mb-4 sm:mb-5 font-mono text-[10px] tracking-[0.18em] uppercase text-gold">
+        Focus
+       </h3>
+       <nav className="flex flex-col gap-2 sm:gap-2.5" aria-label="Focus details">
+        <span className="text-[11px] sm:text-[13px] text-text-secondary font-light">Next.js interfaces</span>
+        <span className="text-[11px] sm:text-[13px] text-text-secondary font-light">MERN applications</span>
+        <span className="text-[11px] sm:text-[13px] text-text-secondary font-light">Animated portfolios</span>
+        <span className="text-[11px] sm:text-[13px] text-text-secondary font-light">API-backed showcases</span>
+       </nav>
+      </div>
      </div>
     </div>
 
