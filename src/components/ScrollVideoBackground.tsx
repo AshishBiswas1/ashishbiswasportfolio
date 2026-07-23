@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSpring, type MotionValue } from "framer-motion";
+import { fetchFrames } from "@/services/api";
 
 const TOTAL_FRAMES = 240;
 
@@ -16,7 +17,7 @@ let globalIsPreloaded = false;
 let globalIsPreloading = false;
 const globalListeners = new Set<(percent: number) => void>();
 
-const startGlobalPreload = () => {
+const startGlobalPreload = async () => {
  if (globalIsPreloading || globalIsPreloaded) return;
  
  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
@@ -31,21 +32,31 @@ const startGlobalPreload = () => {
  let loadedCount = 0;
  const frames: HTMLImageElement[] = [];
 
+ // Attempt to fetch custom File Garden URLs from backend API
+ let customUrls: string[] = [];
+ try {
+  customUrls = await fetchFrames();
+ } catch {
+  customUrls = [];
+ }
+
+ const targetTotal = customUrls.length > 0 ? customUrls.length : TOTAL_FRAMES;
+
  const handleFrameLoad = () => {
   loadedCount++;
 
   // Set globals first when done so listeners receiving 100% have access to the cached frames
-  if (loadedCount === TOTAL_FRAMES) {
+  if (loadedCount === targetTotal) {
    globalCachedFrames = frames;
    globalIsPreloaded = true;
    globalIsPreloading = false;
   }
   
   if (!isMobile) {
-   globalPreloadProgress = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+   globalPreloadProgress = Math.round((loadedCount / targetTotal) * 100);
    globalListeners.forEach((listener) => listener(globalPreloadProgress));
   } else {
-   if (loadedCount === TOTAL_FRAMES) {
+   if (loadedCount === targetTotal) {
     globalPreloadProgress = 100;
     globalListeners.forEach((listener) => listener(100));
    }
@@ -53,11 +64,11 @@ const startGlobalPreload = () => {
  };
 
  const loadFrames = () => {
-  for (let i = 0; i < TOTAL_FRAMES; i++) {
+  for (let i = 0; i < targetTotal; i++) {
    const img = new Image();
    img.onload = handleFrameLoad;
    img.onerror = handleFrameLoad;
-   img.src = getFramePath(i);
+   img.src = customUrls[i] || getFramePath(i);
    frames.push(img);
   }
  };

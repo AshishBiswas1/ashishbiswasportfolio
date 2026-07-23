@@ -264,3 +264,19 @@ export async function fetchInternshipById(id: string) {
   return null;
  }
 }
+
+export async function fetchFrames() {
+ try {
+  const data = await fetchAPI<{ frames?: string[] }>("/frames");
+  if (data && typeof data === "object" && "frames" in data) {
+   const obj = data as { frames?: string[] };
+   if (Array.isArray(obj.frames) && obj.frames.length > 0) {
+    return obj.frames;
+   }
+  }
+  return [];
+ } catch (error) {
+  console.error("Error fetching background frame URLs from backend:", error);
+  return [];
+ }
+}

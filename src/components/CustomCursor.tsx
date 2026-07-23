@@ -54,9 +54,23 @@ export default function CustomCursor() {
       activeRing.style.opacity = "0";
     };
 
+    // ── Fullscreen Top Layer reparenting ──
+    const handleFullscreenChange = () => {
+      const fsElem = document.fullscreenElement || (document as any).webkitFullscreenElement;
+      if (fsElem) {
+        fsElem.appendChild(activeDot);
+        fsElem.appendChild(activeRing);
+      } else {
+        document.body.appendChild(activeDot);
+        document.body.appendChild(activeRing);
+      }
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseenter", handleMouseEnter);
     document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
     // ── Hover detection on all interactive elements ──
     const interactiveSelectors = [
@@ -99,6 +113,8 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseout", handleMouseOut);
       document.removeEventListener("mousedown", handleMouseDown);

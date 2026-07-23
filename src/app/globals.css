@@ -185,6 +185,15 @@ textarea {
   opacity: 0; /* hidden until mouse enters */
 }
 
+/* Ensure custom cursor elements float on top inside the browser's Fullscreen Top Layer */
+:fullscreen #cursor-dot, :-webkit-full-screen #cursor-dot {
+  z-index: 2147483647 !important;
+}
+
+:fullscreen #cursor-ring, :-webkit-full-screen #cursor-ring {
+  z-index: 2147483646 !important;
+}
+
 /* ── Hover state on clickable elements ──
    The dot expands and the ring tightens to signal interactivity */
 body.cursor-hover #cursor-dot {
